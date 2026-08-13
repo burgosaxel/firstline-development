@@ -170,9 +170,19 @@ if (menuToggle && header) {
 
 const form = document.getElementById('contact-form');
 const successState = document.getElementById('success-state');
+const formError = document.getElementById('form-error');
+const CONTACT_ENDPOINT = 'https://us-east1-firstline-development.cloudfunctions.net/submitContactForm';
+
+const escapeHtml = (value) =>
+  String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 
 if (form) {
-  form.addEventListener('submit', (event) => {
+  form.addEventListener('submit', async (event) => {
     event.preventDefault();
 
     if (!form.checkValidity()) {
@@ -180,20 +190,77 @@ if (form) {
       return;
     }
 
+    if (!CONTACT_ENDPOINT) {
+      if (formError) {
+        formError.hidden = false;
+        formError.textContent = 'The contact form is not ready yet. Please try again later.';
+      }
+      return;
+    }
+
+    const submitButton = form.querySelector('button[type="submit"]');
+    const originalButtonText = submitButton ? submitButton.textContent : '';
     const formData = new FormData(form);
-    const projectType = formData.get('projectType') || 'Not specified';
-    const name = formData.get('name') || 'There';
+    const name = formData.get('name') || 'there';
+    const payload = {
+      name: formData.get('name') || '',
+      businessName: formData.get('businessName') || '',
+      email: formData.get('email') || '',
+      phone: formData.get('phone') || '',
+      currentWebsite: formData.get('currentWebsite') || '',
+      projectType: formData.get('projectType') || '',
+      businessNeed: formData.get('businessNeed') || '',
+      message: formData.get('message') || '',
+      website: formData.get('website') || ''
+    };
 
-    form.setAttribute('hidden', 'hidden');
-    form.style.display = 'none';
+    if (formError) {
+      formError.hidden = true;
+      formError.textContent = '';
+    }
 
-    if (successState) {
-      successState.hidden = false;
-      successState.innerHTML = `
-        <div class="success-icon" aria-hidden="true">\u2713</div>
-        <h3>Thanks, ${name}.</h3>
-        <p>Your inquiry has been received. We&apos;ll be in touch soon.</p>
-      `;
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.textContent = 'Sending...';
+    }
+
+    try {
+      const response = await fetch(CONTACT_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok || !result.ok) {
+        throw new Error(result.error || 'Unable to send your message right now.');
+      }
+
+      form.reset();
+      form.setAttribute('hidden', 'hidden');
+      form.style.display = 'none';
+
+      if (successState) {
+        successState.hidden = false;
+        successState.innerHTML = `
+          <div class="success-icon" aria-hidden="true">\u2713</div>
+          <h3>Thanks, ${escapeHtml(name)}.</h3>
+          <p>Your inquiry has been received. We&apos;ll be in touch soon.</p>
+        `;
+      }
+    } catch (error) {
+      if (formError) {
+        formError.hidden = false;
+        formError.textContent = error.message || 'Unable to send your message right now. Please try again.';
+      }
+    } finally {
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = originalButtonText;
+      }
     }
   });
 }

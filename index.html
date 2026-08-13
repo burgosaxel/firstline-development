@@ -454,6 +454,11 @@
 
           <div class="contact-shell reveal">
             <form id="contact-form" class="contact-form" novalidate>
+              <label class="honeypot-field" aria-hidden="true">
+                <span>Website</span>
+                <input type="text" name="website" tabindex="-1" autocomplete="off" />
+              </label>
+
               <div class="field-row two-up">
                 <label>
                   <span>Name</span>
@@ -502,6 +507,7 @@
               </label>
 
               <button type="submit" class="button button-primary full-width">Start My Project</button>
+              <p id="form-error" class="form-error" hidden aria-live="polite"></p>
             </form>
 
             <div id="success-state" class="success-state" hidden aria-live="polite">

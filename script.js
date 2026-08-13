@@ -159,6 +159,13 @@ if (menuToggle && header) {
       closeMobileMenu();
     });
   });
+
+  document.addEventListener('click', (event) => {
+    if (!header.classList.contains('is-open')) return;
+    if (header.contains(event.target)) return;
+
+    closeMobileMenu();
+  });
 }
 
 const form = document.getElementById('contact-form');

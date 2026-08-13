@@ -1385,6 +1385,69 @@ textarea {
   gap: 1rem;
 }
 
+.legal-main {
+  background: var(--bg);
+}
+
+.legal-hero {
+  background:
+    linear-gradient(90deg, rgba(0, 87, 217, 0.08) 1px, transparent 1px),
+    linear-gradient(180deg, #fff 0%, #f4f7fb 100%);
+  background-size: 78px 78px, auto;
+  border-bottom: 1px solid var(--line);
+  padding: 3.5rem 0 2.5rem;
+}
+
+.legal-hero h1 {
+  max-width: 920px;
+  margin-bottom: 0.85rem;
+}
+
+.legal-date {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.legal-content {
+  padding: 2.5rem 0 4rem;
+}
+
+.legal-document {
+  max-width: 920px;
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 2rem;
+}
+
+.legal-document h2 {
+  font-size: clamp(1.25rem, 2vw, 2rem);
+  margin: 1.8rem 0 0.75rem;
+}
+
+.legal-document h3 {
+  font-size: 1.05rem;
+  margin: 1.2rem 0 0.45rem;
+}
+
+.legal-document p,
+.legal-document li {
+  color: var(--ink-soft);
+}
+
+.legal-document ul {
+  margin: 0 0 1rem;
+  padding-left: 1.35rem;
+}
+
+.legal-document li {
+  margin-bottom: 0.35rem;
+}
+
 .reveal {
   opacity: 0;
   transform: translateY(20px);

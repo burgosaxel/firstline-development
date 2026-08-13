@@ -11,7 +11,7 @@ const portfolioData = [
     }
   },
   {
-    name: 'Ebanistería CAD',
+    name: 'Ebanister\u00eda CAD',
     industry: 'Home Services & Custom Carpentry',
     description: 'A polished service website for custom kitchens, closets, entertainment centers, and remodeling work in Puerto Rico.',
     features: ['Responsive desktop and mobile design', 'Service-focused homepage', 'Quote request CTA', 'Project gallery pathway', 'Spanish-language content', 'Local business positioning'],
@@ -183,7 +183,7 @@ if (form) {
     if (successState) {
       successState.hidden = false;
       successState.innerHTML = `
-        <div class="success-icon" aria-hidden="true">✓</div>
+        <div class="success-icon" aria-hidden="true">\u2713</div>
         <h3>Thanks, ${name}.</h3>
         <p>Your inquiry has been received. We&apos;ll be in touch soon.</p>
       `;
@@ -209,5 +209,5 @@ revealItems.forEach((item) => revealObserver.observe(item));
 
 const yearNode = document.querySelector('.footer-bottom p');
 if (yearNode) {
-  yearNode.textContent = `© ${new Date().getFullYear()} FirstLine Development. All rights reserved.`;
+  yearNode.textContent = `\u00a9 ${new Date().getFullYear()} FirstLine Development. All rights reserved.`;
 }

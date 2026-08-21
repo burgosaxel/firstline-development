@@ -1207,6 +1207,16 @@ p {
   align-items: start;
 }
 
+.contact-phone-link {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 1rem;
+  color: var(--blue);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
 .contact-shell {
   padding: 1.4rem;
 }
@@ -1333,7 +1343,7 @@ textarea {
 
 .footer-grid {
   display: grid;
-  grid-template-columns: 1.2fr 0.8fr;
+  grid-template-columns: 1.2fr 0.8fr auto;
   align-items: center;
   gap: 1rem;
   padding: 0;
@@ -1370,8 +1380,15 @@ textarea {
 
 .footer-nav a,
 .footer-meta a,
+.footer-phone,
 .legal-links a {
   color: rgba(255, 255, 255, 0.74);
+}
+
+.footer-phone {
+  justify-self: end;
+  font-weight: 800;
+  white-space: nowrap;
 }
 
 .footer-bottom {
@@ -1385,6 +1402,7 @@ textarea {
 
 .footer-bottom p,
 .footer-nav a,
+.footer-phone,
 .legal-links a {
   font-size: 0.86rem;
 }
@@ -1620,7 +1638,11 @@ textarea {
   }
 
   .footer-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
+  }
+
+  .footer-phone {
+    justify-self: center;
   }
 }
 

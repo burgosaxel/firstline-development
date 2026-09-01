@@ -845,6 +845,21 @@ p {
   align-items: stretch;
 }
 
+.pricing-page {
+  min-height: calc(100vh - 86px);
+  padding: 4rem 0 3rem;
+}
+
+.pricing-page .section-heading {
+  margin-bottom: 3rem;
+}
+
+.pricing-cta {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
 .price-card {
   position: relative;
   background: #fff;
@@ -880,6 +895,16 @@ p {
   background: var(--ink);
   color: #fff;
   text-align: center;
+}
+
+.price-kicker {
+  margin: 0 0 0.35rem;
+  color: var(--blue);
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-align: center;
+  text-transform: uppercase;
 }
 
 .price-main {
@@ -2032,6 +2057,14 @@ textarea {
 
   .price-card {
     padding-bottom: 1.25rem;
+  }
+
+  .pricing-page {
+    padding: 1.4rem 0 1.1rem;
+  }
+
+  .pricing-page .section-heading {
+    margin-bottom: 1.25rem;
   }
 
   .nav-cta {

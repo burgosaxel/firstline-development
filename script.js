@@ -20,6 +20,17 @@ const portfolioData = [
       desktop: 'assets/ebanisteriacad-desktop.png',
       mobile: 'assets/ebanisteriacad-mobile.png'
     }
+  },
+  {
+    name: 'Tripletas La Union',
+    industry: 'Food & Beverage',
+    description: 'A bold Spanish-language restaurant website built for fast ordering, location details, menu browsing, and late-night customer action.',
+    features: ['Responsive desktop and mobile design', 'Spanish-language content', 'Order-by-phone CTA', 'Menu pathway', 'Location details', 'Bold local brand style'],
+    url: 'https://tripletaslaunion.com/',
+    screenshots: {
+      desktop: 'assets/tripletas-la-union-desktop.png',
+      mobile: 'assets/tripletas-la-union-mobile.jpg'
+    }
   }
 ];
 

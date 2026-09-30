@@ -12,3 +12,4 @@ firebase-export-*/
 service-account*.json
 *-service-account.json
 credentials*.json
+.codex-remote-attachments/

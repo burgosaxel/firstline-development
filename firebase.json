@@ -26,6 +26,8 @@
       ".git",
       ".git/**",
       ".gitignore",
+      ".codex-remote-attachments",
+      ".codex-remote-attachments/**",
       "CNAME",
       "functions",
       "functions/**",

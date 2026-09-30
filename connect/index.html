@@ -1,0 +1,317 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FirstLine Development | Connect</title>
+  <meta name="description" content="Connect with FirstLine Development." />
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --panel: rgba(17, 23, 31, 0.82);
+      --panel-border: rgba(255, 255, 255, 0.08);
+      --text: #f5f7fb;
+      --muted: #b7c0cc;
+      --accent: #1355ff;
+      --accent-2: #0c45d6;
+      --white: #ffffff;
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+      --radius: 26px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(19, 85, 255, 0.18), transparent 32%),
+        radial-gradient(circle at bottom right, rgba(19, 85, 255, 0.15), transparent 28%),
+        linear-gradient(135deg, #0b0f14 0%, #0f1722 45%, #0a0d13 100%);
+      color: var(--text);
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+      padding: 20px;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: rgba(5, 8, 12, 0.45);
+      backdrop-filter: blur(6px);
+    }
+
+    .modal {
+      width: min(100%, 440px);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(21, 28, 38, 0.96), rgba(13, 18, 25, 0.95));
+      border: 1px solid var(--panel-border);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .top-bar {
+      height: 6px;
+      background: linear-gradient(90deg, var(--white) 0%, var(--white) 32%, var(--accent) 32%, var(--accent) 100%);
+    }
+
+    .content {
+      padding: 28px 24px 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .logo-wrap {
+      width: 72px;
+      height: 72px;
+      border-radius: 18px;
+      background: #fff;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
+    }
+
+    .logo-wrap img {
+      width: 54px;
+      height: 54px;
+      object-fit: contain;
+      display: block;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.45rem;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.45;
+    }
+
+    .intro {
+      margin: 18px 0 24px;
+      color: #d5dbe4;
+      font-size: 0.96rem;
+      line-height: 1.55;
+    }
+
+    .actions {
+      display: grid;
+      gap: 12px;
+    }
+
+    .button {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      width: 100%;
+      padding: 15px 16px;
+      border-radius: 18px;
+      text-decoration: none;
+      color: var(--text);
+      background: rgba(255,255,255,0.045);
+      border: 1px solid rgba(255,255,255,0.06);
+      transition: transform 0.16s ease, background 0.16s ease, border-color 0.16s ease;
+    }
+
+    .button:hover,
+    .button:focus-visible {
+      transform: translateY(-1px);
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(255,255,255,0.12);
+      outline: none;
+    }
+
+    .button.primary {
+      background: linear-gradient(180deg, var(--accent), var(--accent-2));
+      border-color: rgba(255,255,255,0.08);
+    }
+
+    .button.primary:hover,
+    .button.primary:focus-visible {
+      background: linear-gradient(180deg, #2764ff, #0e4cea);
+    }
+
+    .button-text {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      min-width: 0;
+    }
+
+    .label {
+      font-weight: 700;
+      font-size: 0.98rem;
+    }
+
+    .value {
+      font-size: 0.86rem;
+      color: rgba(255,255,255,0.78);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    .button.primary .value {
+      color: rgba(255,255,255,0.86);
+    }
+
+    .icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,0.08);
+      flex: 0 0 auto;
+      font-size: 1.1rem;
+    }
+
+    .button.primary .icon {
+      background: rgba(255,255,255,0.17);
+    }
+
+    .footer {
+      margin-top: 22px;
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .mini-links {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .mini-links a {
+      color: #d8e2ff;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .mini-links a:hover,
+    .mini-links a:focus-visible {
+      text-decoration: underline;
+      outline: none;
+    }
+
+    @media (max-width: 420px) {
+      .content {
+        padding: 24px 18px 20px;
+      }
+      .brand {
+        gap: 12px;
+      }
+      .logo-wrap {
+        width: 62px;
+        height: 62px;
+        border-radius: 16px;
+      }
+      .logo-wrap img {
+        width: 46px;
+        height: 46px;
+      }
+      h1 {
+        font-size: 1.3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay" role="dialog" aria-modal="true" aria-labelledby="connect-title">
+    <section class="modal">
+      <div class="top-bar"></div>
+      <div class="content">
+        <div class="brand">
+          <div class="logo-wrap">
+            <img src="fl-logo.png" alt="FirstLine Development logo" />
+          </div>
+          <div>
+            <h1 id="connect-title">FirstLine Development</h1>
+            <p class="subtitle">Websites built for business.</p>
+          </div>
+        </div>
+
+        <p class="intro">
+          Thanks for scanning. Choose an option below to visit the website, call, email, text, or save FirstLine Development as a contact.
+        </p>
+
+        <div class="actions">
+          <a class="button primary" href="https://firstlinedev.com" target="_blank" rel="noopener noreferrer">
+            <span class="button-text">
+              <span class="label">Visit Website</span>
+              <span class="value">firstlinedev.com</span>
+            </span>
+            <span class="icon" aria-hidden="true">-&gt;</span>
+          </a>
+
+          <a class="button" href="tel:+19193075422">
+            <span class="button-text">
+              <span class="label">Call</span>
+              <span class="value">(919) 307-5422</span>
+            </span>
+            <span class="icon" aria-hidden="true">TEL</span>
+          </a>
+
+          <a class="button" href="sms:+19193075422">
+            <span class="button-text">
+              <span class="label">Text</span>
+              <span class="value">Start a conversation</span>
+            </span>
+            <span class="icon" aria-hidden="true">SMS</span>
+          </a>
+
+          <a class="button" href="mailto:firstlinedevnt@gmail.com">
+            <span class="button-text">
+              <span class="label">Email</span>
+              <span class="value">firstlinedevnt@gmail.com</span>
+            </span>
+            <span class="icon" aria-hidden="true">@</span>
+          </a>
+
+          <a class="button" href="firstline-contact.vcf" download>
+            <span class="button-text">
+              <span class="label">Save Contact</span>
+              <span class="value">Download vCard</span>
+            </span>
+            <span class="icon" aria-hidden="true">+</span>
+          </a>
+        </div>
+
+        <div class="footer">
+          Scan, tap, and connect with FirstLine quickly.
+          <div class="mini-links">
+            <a href="https://firstlinedev.com" target="_blank" rel="noopener noreferrer">Website</a>
+            <a href="mailto:firstlinedevnt@gmail.com">Email</a>
+            <a href="tel:+19193075422">Phone</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
+

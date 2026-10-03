@@ -1,317 +1,134 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FirstLine Development | Connect</title>
+  <title>Connect - FirstLine Development</title>
   <meta name="description" content="Connect with FirstLine Development." />
-  <style>
-    :root {
-      --bg: #0b0f14;
-      --panel: rgba(17, 23, 31, 0.82);
-      --panel-border: rgba(255, 255, 255, 0.08);
-      --text: #f5f7fb;
-      --muted: #b7c0cc;
-      --accent: #1355ff;
-      --accent-2: #0c45d6;
-      --white: #ffffff;
-      --shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
-      --radius: 26px;
-    }
-
-    * { box-sizing: border-box; }
-
-    html, body {
-      margin: 0;
-      min-height: 100%;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(19, 85, 255, 0.18), transparent 32%),
-        radial-gradient(circle at bottom right, rgba(19, 85, 255, 0.15), transparent 28%),
-        linear-gradient(135deg, #0b0f14 0%, #0f1722 45%, #0a0d13 100%);
-      color: var(--text);
-    }
-
-    body {
-      display: grid;
-      place-items: center;
-      padding: 20px;
-    }
-
-    .overlay {
-      position: fixed;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      padding: 20px;
-      background: rgba(5, 8, 12, 0.45);
-      backdrop-filter: blur(6px);
-    }
-
-    .modal {
-      width: min(100%, 440px);
-      border-radius: var(--radius);
-      background: linear-gradient(180deg, rgba(21, 28, 38, 0.96), rgba(13, 18, 25, 0.95));
-      border: 1px solid var(--panel-border);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-    }
-
-    .top-bar {
-      height: 6px;
-      background: linear-gradient(90deg, var(--white) 0%, var(--white) 32%, var(--accent) 32%, var(--accent) 100%);
-    }
-
-    .content {
-      padding: 28px 24px 24px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 18px;
-    }
-
-    .logo-wrap {
-      width: 72px;
-      height: 72px;
-      border-radius: 18px;
-      background: #fff;
-      display: grid;
-      place-items: center;
-      flex: 0 0 auto;
-      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
-    }
-
-    .logo-wrap img {
-      width: 54px;
-      height: 54px;
-      object-fit: contain;
-      display: block;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: 1.45rem;
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-    }
-
-    .subtitle {
-      margin: 6px 0 0;
-      color: var(--muted);
-      font-size: 0.95rem;
-      line-height: 1.45;
-    }
-
-    .intro {
-      margin: 18px 0 24px;
-      color: #d5dbe4;
-      font-size: 0.96rem;
-      line-height: 1.55;
-    }
-
-    .actions {
-      display: grid;
-      gap: 12px;
-    }
-
-    .button {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      width: 100%;
-      padding: 15px 16px;
-      border-radius: 18px;
-      text-decoration: none;
-      color: var(--text);
-      background: rgba(255,255,255,0.045);
-      border: 1px solid rgba(255,255,255,0.06);
-      transition: transform 0.16s ease, background 0.16s ease, border-color 0.16s ease;
-    }
-
-    .button:hover,
-    .button:focus-visible {
-      transform: translateY(-1px);
-      background: rgba(255,255,255,0.07);
-      border-color: rgba(255,255,255,0.12);
-      outline: none;
-    }
-
-    .button.primary {
-      background: linear-gradient(180deg, var(--accent), var(--accent-2));
-      border-color: rgba(255,255,255,0.08);
-    }
-
-    .button.primary:hover,
-    .button.primary:focus-visible {
-      background: linear-gradient(180deg, #2764ff, #0e4cea);
-    }
-
-    .button-text {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      min-width: 0;
-    }
-
-    .label {
-      font-weight: 700;
-      font-size: 0.98rem;
-    }
-
-    .value {
-      font-size: 0.86rem;
-      color: rgba(255,255,255,0.78);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 100%;
-    }
-
-    .button.primary .value {
-      color: rgba(255,255,255,0.86);
-    }
-
-    .icon {
-      width: 38px;
-      height: 38px;
-      border-radius: 12px;
-      display: grid;
-      place-items: center;
-      background: rgba(255,255,255,0.08);
-      flex: 0 0 auto;
-      font-size: 1.1rem;
-    }
-
-    .button.primary .icon {
-      background: rgba(255,255,255,0.17);
-    }
-
-    .footer {
-      margin-top: 22px;
-      text-align: center;
-      font-size: 0.82rem;
-      color: var(--muted);
-      line-height: 1.45;
-    }
-
-    .mini-links {
-      display: flex;
-      justify-content: center;
-      gap: 14px;
-      flex-wrap: wrap;
-      margin-top: 10px;
-    }
-
-    .mini-links a {
-      color: #d8e2ff;
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    .mini-links a:hover,
-    .mini-links a:focus-visible {
-      text-decoration: underline;
-      outline: none;
-    }
-
-    @media (max-width: 420px) {
-      .content {
-        padding: 24px 18px 20px;
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              dark: '#18181B',
+              accent: '#2563EB',
+              light: '#F4F4F5'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif']
+          }
+        }
       }
-      .brand {
-        gap: 12px;
-      }
-      .logo-wrap {
-        width: 62px;
-        height: 62px;
-        border-radius: 16px;
-      }
-      .logo-wrap img {
-        width: 46px;
-        height: 46px;
-      }
-      h1 {
-        font-size: 1.3rem;
-      }
-    }
-  </style>
+    };
+  </script>
 </head>
-<body>
-  <div class="overlay" role="dialog" aria-modal="true" aria-labelledby="connect-title">
-    <section class="modal">
-      <div class="top-bar"></div>
-      <div class="content">
-        <div class="brand">
-          <div class="logo-wrap">
-            <img src="fl-logo.png" alt="FirstLine Development logo" />
+<body class="bg-brand-light font-sans text-brand-dark antialiased min-h-screen flex items-center justify-center p-4">
+  <div class="fixed inset-0 z-[-1] opacity-[0.05] pointer-events-none" style="background-image: radial-gradient(#18181B 1px, transparent 1px); background-size: 24px 24px;"></div>
+
+  <main class="w-full max-w-[24.7rem] bg-white rounded-[2rem] shadow-[0_24px_48px_-12px_rgba(0,0,0,0.08)] overflow-hidden border border-slate-200 relative" aria-labelledby="connect-title">
+    <div class="h-1.5 w-full bg-brand-accent"></div>
+
+    <div class="p-[1.36rem] pb-[1.8rem]">
+      <header class="flex flex-col items-center text-center mb-[1.57rem]">
+        <div class="relative mb-4">
+          <div class="w-[4.5rem] h-[4.5rem] bg-white rounded-3xl flex items-center justify-center shadow-xl border border-slate-100">
+            <img class="w-[3.18rem] h-[3.18rem] object-contain" src="fl-logo.png" alt="FirstLine Development logo" />
           </div>
-          <div>
-            <h1 id="connect-title">FirstLine Development</h1>
-            <p class="subtitle">Websites built for business.</p>
-          </div>
-        </div>
-
-        <p class="intro">
-          Thanks for scanning. Choose an option below to visit the website, call, email, text, or save FirstLine Development as a contact.
-        </p>
-
-        <div class="actions">
-          <a class="button primary" href="https://firstlinedev.com" target="_blank" rel="noopener noreferrer">
-            <span class="button-text">
-              <span class="label">Visit Website</span>
-              <span class="value">firstlinedev.com</span>
-            </span>
-            <span class="icon" aria-hidden="true">-&gt;</span>
-          </a>
-
-          <a class="button" href="tel:+19193075422">
-            <span class="button-text">
-              <span class="label">Call</span>
-              <span class="value">(919) 307-5422</span>
-            </span>
-            <span class="icon" aria-hidden="true">TEL</span>
-          </a>
-
-          <a class="button" href="sms:+19193075422">
-            <span class="button-text">
-              <span class="label">Text</span>
-              <span class="value">Start a conversation</span>
-            </span>
-            <span class="icon" aria-hidden="true">SMS</span>
-          </a>
-
-          <a class="button" href="mailto:firstlinedevnt@gmail.com">
-            <span class="button-text">
-              <span class="label">Email</span>
-              <span class="value">firstlinedevnt@gmail.com</span>
-            </span>
-            <span class="icon" aria-hidden="true">@</span>
-          </a>
-
-          <a class="button" href="firstline-contact.vcf" download>
-            <span class="button-text">
-              <span class="label">Save Contact</span>
-              <span class="value">Download vCard</span>
-            </span>
-            <span class="icon" aria-hidden="true">+</span>
-          </a>
-        </div>
-
-        <div class="footer">
-          Scan, tap, and connect with FirstLine quickly.
-          <div class="mini-links">
-            <a href="https://firstlinedev.com" target="_blank" rel="noopener noreferrer">Website</a>
-            <a href="mailto:firstlinedevnt@gmail.com">Email</a>
-            <a href="tel:+19193075422">Phone</a>
+          <div class="absolute -bottom-1 -right-1 w-7 h-7 bg-green-500 rounded-full border-[3px] border-white flex items-center justify-center text-[9px]" aria-hidden="true">
+            <i class="fa-solid fa-check text-white"></i>
           </div>
         </div>
-      </div>
-    </section>
-  </div>
+
+        <h1 id="connect-title" class="text-2xl font-extrabold tracking-tight text-brand-dark mb-1">FirstLine Development</h1>
+        <p class="text-brand-accent font-semibold text-sm tracking-wide uppercase">Websites built for business.</p>
+
+        <div class="mt-[0.9rem] px-[0.9rem] py-[0.66rem] rounded-2xl bg-brand-light border border-slate-200/50 text-sm text-slate-500 leading-snug max-w-[298px]">
+          <i class="fa-solid fa-qrcode mr-2 opacity-50 text-xs" aria-hidden="true"></i>
+          Scan successful. Connect with our team using the options below.
+        </div>
+      </header>
+
+      <section class="space-y-[0.79rem]" aria-label="Contact actions">
+        <a href="https://firstlinedev.com" target="_blank" rel="noopener noreferrer" class="group relative flex items-center justify-between p-[0.9rem] bg-brand-dark rounded-2xl text-white shadow-lg shadow-brand-dark/10 hover:bg-brand-accent transition-all duration-300">
+          <span class="flex items-center gap-4">
+            <span class="w-11 h-11 bg-white/10 rounded-xl flex items-center justify-center" aria-hidden="true">
+              <i class="fa-solid fa-globe text-lg"></i>
+            </span>
+            <span>
+              <span class="block font-bold text-base">Visit Website</span>
+              <span class="block text-xs text-white/60 uppercase tracking-widest font-semibold">firstlinedev.com</span>
+            </span>
+          </span>
+          <span class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center" aria-hidden="true">
+            <i class="fa-solid fa-arrow-right text-xs"></i>
+          </span>
+        </a>
+
+        <div class="grid grid-cols-2 gap-[0.79rem]">
+          <a href="tel:+19193075422" class="group flex flex-col items-center justify-center p-[0.9rem] bg-brand-light border border-slate-200 rounded-2xl hover:border-brand-accent hover:bg-white transition-all duration-300">
+            <span class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-brand-dark mb-2 shadow-sm group-hover:text-brand-accent" aria-hidden="true">
+              <i class="fa-solid fa-phone"></i>
+            </span>
+            <span class="font-bold text-sm">Call Us</span>
+            <span class="text-[10px] text-slate-400 mt-1 uppercase tracking-widest font-bold">Direct</span>
+          </a>
+
+          <a href="sms:+19193075422" class="group flex flex-col items-center justify-center p-[0.9rem] bg-brand-light border border-slate-200 rounded-2xl hover:border-brand-accent hover:bg-white transition-all duration-300">
+            <span class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-brand-dark mb-2 shadow-sm group-hover:text-brand-accent" aria-hidden="true">
+              <i class="fa-solid fa-message"></i>
+            </span>
+            <span class="font-bold text-sm">Text Us</span>
+            <span class="text-[10px] text-slate-400 mt-1 uppercase tracking-widest font-bold">SMS</span>
+          </a>
+        </div>
+
+        <a href="mailto:firstlinedevnt@gmail.com" class="group flex items-center justify-between p-[0.9rem] bg-brand-light border border-slate-200 rounded-2xl hover:border-brand-accent hover:bg-white transition-all duration-300">
+          <span class="flex items-center gap-4 min-w-0">
+            <span class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-brand-dark shadow-sm group-hover:text-brand-accent shrink-0" aria-hidden="true">
+              <i class="fa-solid fa-envelope"></i>
+            </span>
+            <span class="min-w-0">
+              <span class="block font-bold text-sm text-brand-dark">Send Email</span>
+              <span class="block text-xs text-slate-500 truncate">firstlinedevnt@gmail.com</span>
+            </span>
+          </span>
+          <i class="fa-solid fa-chevron-right text-slate-300 text-xs mr-1" aria-hidden="true"></i>
+        </a>
+
+        <a href="firstline-contact.vcf" download class="group flex items-center justify-between p-[0.9rem] bg-brand-accent text-white rounded-2xl hover:bg-brand-dark transition-all duration-300">
+          <span class="flex items-center gap-4">
+            <span class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-white" aria-hidden="true">
+              <i class="fa-solid fa-user-plus text-lg"></i>
+            </span>
+            <span>
+              <span class="block font-bold text-sm">Save Contact</span>
+              <span class="block text-xs text-white/70">Add to address book</span>
+            </span>
+          </span>
+          <i class="fa-solid fa-download text-white/50 text-xs mr-1" aria-hidden="true"></i>
+        </a>
+      </section>
+
+      <footer class="mt-[1.57rem] flex flex-col items-center gap-[0.9rem]">
+        <div class="flex items-center gap-8 text-slate-400 text-sm" aria-label="Quick links">
+          <a href="https://firstlinedev.com" target="_blank" rel="noopener noreferrer" class="hover:text-brand-accent transition-colors" aria-label="Visit FirstLine Development website">
+            <i class="fa-solid fa-globe text-lg" aria-hidden="true"></i>
+          </a>
+          <a href="mailto:firstlinedevnt@gmail.com" class="hover:text-brand-accent transition-colors" aria-label="Email FirstLine Development">
+            <i class="fa-solid fa-envelope text-lg" aria-hidden="true"></i>
+          </a>
+          <a href="tel:+19193075422" class="hover:text-brand-accent transition-colors" aria-label="Call FirstLine Development">
+            <i class="fa-solid fa-phone text-lg" aria-hidden="true"></i>
+          </a>
+        </div>
+        <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">&copy; 2026 FirstLine Development</p>
+      </footer>
+    </div>
+  </main>
 </body>
 </html>
-

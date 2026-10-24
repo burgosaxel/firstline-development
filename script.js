@@ -1,3 +1,77 @@
+(() => {
+const analytics = (() => {
+  const existing = window.FirstLineAnalytics;
+  if (existing) return existing;
+
+  const pageByPath = Object.freeze({
+    '': 'home',
+    '/': 'home',
+    '/index.html': 'home',
+    '/pricing.html': 'pricing',
+    '/privacy.html': 'privacy',
+    '/terms.html': 'terms'
+  });
+  const contract = Object.freeze({
+    page_view: Object.freeze({ page: Object.freeze(['home', 'pricing', 'privacy', 'terms']) }),
+    section_navigation: Object.freeze({ section: Object.freeze(['work', 'services', 'process', 'about']) }),
+    contact_cta_click: Object.freeze({ placement: Object.freeze(['nav', 'hero', 'sales', 'final']) }),
+    portfolio_project_click: Object.freeze({ project: Object.freeze(['bloom_infive', 'ebanisteria_cad', 'tripletas_la_union']) }),
+    inquiry_submit_attempt: Object.freeze({}),
+    inquiry_submit_success: Object.freeze({}),
+    inquiry_submit_error: Object.freeze({ reason: Object.freeze(['configuration', 'network', 'server', 'response']) })
+  });
+  const viewedDocuments = new WeakSet();
+  let offlineSink = null;
+
+  const sanitize = (name, params = {}) => {
+    const allowedParams = contract[name];
+    if (!allowedParams || !params || typeof params !== 'object' || Array.isArray(params)) return null;
+
+    const keys = Object.keys(params);
+    const allowedKeys = Object.keys(allowedParams);
+    if (keys.length !== allowedKeys.length || keys.some((key) => !Object.hasOwn(allowedParams, key))) return null;
+
+    const sanitized = {};
+    for (const key of allowedKeys) {
+      if (!allowedParams[key].includes(params[key])) return null;
+      sanitized[key] = params[key];
+    }
+
+    return Object.freeze(sanitized);
+  };
+
+  const track = (name, params) => {
+    const sanitized = sanitize(name, params);
+    if (!sanitized) return false;
+
+    const record = Object.freeze({ schema_version: 1, name, params: sanitized });
+    if (offlineSink) offlineSink(record);
+    return true;
+  };
+
+  const initializeDocument = (documentNode, pathname) => {
+    if (viewedDocuments.has(documentNode)) return false;
+    viewedDocuments.add(documentNode);
+    const page = pageByPath[pathname || ''];
+    return page ? track('page_view', { page }) : false;
+  };
+
+  return (window.FirstLineAnalytics = Object.freeze({
+    contract,
+    initializeDocument,
+    setOfflineSink(sink) {
+      offlineSink = typeof sink === 'function' ? sink : null;
+    },
+    track
+  }));
+})();
+
+analytics.initializeDocument(document, window.location.pathname);
+
+const boundDocuments = window.__firstLineBoundDocuments || (window.__firstLineBoundDocuments = new WeakSet());
+if (boundDocuments.has(document)) return;
+boundDocuments.add(document);
+
 const portfolioData = [
   {
     name: 'BLOOM.INFIVE',
@@ -100,7 +174,7 @@ if (portfolioGrid) {
               ${project.features.map((feature) => `<li>${feature}</li>`).join('')}
             </ul>
             <div class="project-actions">
-              <a class="button button-primary" href="${project.url}"${linkAttrs}>View Website</a>
+              <a class="button button-primary" data-project-key="${project.name === 'BLOOM.INFIVE' ? 'bloom_infive' : project.name === 'Ebanistería CAD' ? 'ebanisteria_cad' : 'tripletas_la_union'}" href="${project.url}"${linkAttrs}>View Website</a>
             </div>
           </div>
         </article>
@@ -145,7 +219,12 @@ anchorLinks.forEach((link) => {
     const hash = link.getAttribute('href');
     if (!hash || hash === '#') return;
 
-    const target = document.querySelector(hash);
+    let target;
+    try {
+      target = document.querySelector(hash);
+    } catch {
+      return;
+    }
     if (!target) return;
 
     event.preventDefault();
@@ -156,6 +235,34 @@ anchorLinks.forEach((link) => {
 
     window.scrollTo({ top: Math.max(targetTop, 0), behavior: 'smooth' });
     history.pushState(null, '', hash);
+
+    const section = {
+      '#work': 'work',
+      '#services': 'services',
+      '#process': 'process',
+      '#about': 'about'
+    }[hash];
+    if (section) analytics.track('section_navigation', { section });
+  });
+});
+
+const contactPlacements = new Map([
+  ['nav-cta', 'nav'],
+  ['hero-actions', 'hero'],
+  ['sales-cta', 'sales'],
+  ['final-cta', 'final']
+]);
+
+document.querySelectorAll('a[href="/connect"]').forEach((link) => {
+  link.addEventListener('click', () => {
+    const placement = [...contactPlacements].find(([className]) => link.closest(`.${className}`));
+    if (placement) analytics.track('contact_cta_click', { placement: placement[1] });
+  });
+});
+
+document.querySelectorAll('[data-project-key]').forEach((link) => {
+  link.addEventListener('click', () => {
+    analytics.track('portfolio_project_click', { project: link.dataset.projectKey });
   });
 });
 
@@ -202,6 +309,7 @@ if (form) {
     }
 
     if (!CONTACT_ENDPOINT) {
+      analytics.track('inquiry_submit_error', { reason: 'configuration' });
       if (formError) {
         formError.hidden = false;
         formError.textContent = 'The contact form is not ready yet. Please try again later.';
@@ -235,6 +343,9 @@ if (form) {
       submitButton.textContent = 'Sending...';
     }
 
+    analytics.track('inquiry_submit_attempt');
+    let submitFailureReason = null;
+
     try {
       const response = await fetch(CONTACT_ENDPOINT, {
         method: 'POST',
@@ -246,9 +357,17 @@ if (form) {
 
       const result = await response.json().catch(() => ({}));
 
-      if (!response.ok || !result.ok) {
+      if (!response.ok) {
+        submitFailureReason = 'server';
         throw new Error(result.error || 'Unable to send your message right now.');
       }
+
+      if (!result.ok) {
+        submitFailureReason = 'response';
+        throw new Error(result.error || 'Unable to send your message right now.');
+      }
+
+      analytics.track('inquiry_submit_success');
 
       form.reset();
       form.setAttribute('hidden', 'hidden');
@@ -263,6 +382,7 @@ if (form) {
         `;
       }
     } catch (error) {
+      analytics.track('inquiry_submit_error', { reason: submitFailureReason || 'network' });
       if (formError) {
         formError.hidden = false;
         formError.textContent = error.message || 'Unable to send your message right now. Please try again.';
@@ -296,3 +416,4 @@ const yearNode = document.querySelector('.footer-bottom p');
 if (yearNode) {
   yearNode.textContent = `\u00a9 ${new Date().getFullYear()} FirstLine Development. All rights reserved.`;
 }
+})();

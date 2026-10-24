@@ -1,8 +1,5 @@
 (() => {
 const analytics = (() => {
-  const existing = window.FirstLineAnalytics;
-  if (existing) return existing;
-
   const pageByPath = Object.freeze({
     '': 'home',
     '/': 'home',
@@ -66,7 +63,7 @@ const analytics = (() => {
     return page ? track('page_view', { page }) : false;
   };
 
-  return (window.FirstLineAnalytics = Object.freeze({
+  const ownedAnalytics = Object.freeze({
     contract,
     initializeDocument,
     setOfflineSink(sink) {
@@ -75,7 +72,25 @@ const analytics = (() => {
       return true;
     },
     track
-  }));
+  });
+  const productionFacade = Object.freeze({ contract, initializeDocument, track });
+  const exposedAnalytics = canUseOfflineSink ? ownedAnalytics : productionFacade;
+  const existingDescriptor = Object.getOwnPropertyDescriptor(window, 'FirstLineAnalytics');
+
+  if (!existingDescriptor || existingDescriptor.configurable) {
+    try {
+      Object.defineProperty(window, 'FirstLineAnalytics', {
+        configurable: false,
+        enumerable: true,
+        value: exposedAnalytics,
+        writable: false
+      });
+    } catch {
+      // A hostile or incompatible global must not affect the owned seam.
+    }
+  }
+
+  return ownedAnalytics;
 })();
 
 analytics.initializeDocument(document, window.location.pathname);

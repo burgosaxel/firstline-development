@@ -105,7 +105,14 @@ const formValues = {
   website: ''
 };
 
-function load({ hostname = 'localhost', pathname = '/', form = null, fetchImpl = async () => ({ ok: true, json: async () => ({ ok: true }) }) } = {}) {
+function load({
+  hostname = 'localhost',
+  pathname = '/',
+  form = null,
+  fetchImpl = async () => ({ ok: true, json: async () => ({ ok: true }) }),
+  preseedAnalytics = null,
+  preseedAnalyticsDescriptor = null
+} = {}) {
   const hashWork = new MockElement({ attributes: { href: '#work' } });
   const hashUnsafe = new MockElement({ attributes: { href: '#not[a-valid-selector' } });
   const contacts = [
@@ -161,6 +168,11 @@ function load({ hostname = 'localhost', pathname = '/', form = null, fetchImpl =
     scrollY: 10,
     scrollTo: (options) => scrollCalls.push(options)
   };
+  if (preseedAnalyticsDescriptor) {
+    Object.defineProperty(window, 'FirstLineAnalytics', preseedAnalyticsDescriptor);
+  } else if (preseedAnalytics) {
+    window.FirstLineAnalytics = preseedAnalytics;
+  }
   const context = vm.createContext({
     Array,
     FormData: MockFormData,
@@ -244,9 +256,73 @@ test('production origins reject offline sink injection without changing accepted
   const app = load({ hostname: 'firstline-development.web.app' });
   const analytics = app.window.FirstLineAnalytics;
   const records = [];
-  assert.equal(analytics.setOfflineSink((record) => records.push(record)), false);
+  assert.equal(typeof analytics.setOfflineSink, 'undefined');
   assert.equal(analytics.track('page_view', { page: 'home' }), true);
   assert.deepEqual(records, []);
+});
+
+test('production replaces configurable pre-seeded analytics globals without invoking them', async () => {
+  const calls = [];
+  const hostile = {
+    initializeDocument: () => calls.push('initializeDocument'),
+    setOfflineSink: () => { calls.push('setOfflineSink'); return true; },
+    track: () => calls.push('track')
+  };
+  const app = load({ hostname: 'firstline-development.web.app', preseedAnalytics: hostile });
+  const analytics = app.window.FirstLineAnalytics;
+  assert.notEqual(analytics, hostile);
+  assert.equal(typeof analytics.setOfflineSink, 'undefined');
+  assert.equal(Object.isFrozen(analytics), true);
+  await app.hashWork.emit('click');
+  await app.contacts[7].emit('click');
+  assert.deepEqual(calls, []);
+  assert.deepEqual(app.historyCalls, [[null, '', '#work']]);
+});
+
+test('non-configurable hostile analytics globals are never invoked and do not break visitor flow', async () => {
+  const calls = [];
+  const hostile = {
+    initializeDocument: () => calls.push('initializeDocument'),
+    setOfflineSink: () => { calls.push('setOfflineSink'); return true; },
+    track: () => calls.push('track')
+  };
+  const app = load({
+    hostname: 'firstline-development.web.app',
+    preseedAnalyticsDescriptor: { configurable: false, enumerable: true, value: hostile, writable: false }
+  });
+  assert.equal(app.window.FirstLineAnalytics, hostile);
+  await app.hashWork.emit('click');
+  await app.contacts[7].emit('click');
+  assert.deepEqual(calls, []);
+  assert.deepEqual(app.historyCalls, [[null, '', '#work']]);
+});
+
+test('repeated production evaluation keeps hostile state untrusted and exact loopback matching fails closed', async () => {
+  const calls = [];
+  const hostile = {
+    initializeDocument: () => calls.push('initializeDocument'),
+    setOfflineSink: () => { calls.push('setOfflineSink'); return true; },
+    track: () => calls.push('track')
+  };
+  const app = load({ hostname: 'firstline-development.web.app', preseedAnalytics: hostile });
+  vm.runInContext(source, app.context, { filename: 'script.js' });
+  await app.hashWork.emit('click');
+  assert.deepEqual(calls, []);
+  assert.equal(app.historyCalls.length, 1);
+  for (const hostname of ['localhost.example.test', 'localhost:3000', 'evil-localhost', '127.0.0.1.example.test', '[::1].example.test', 'user@localhost']) {
+    const lookalike = load({ hostname });
+    assert.equal(typeof lookalike.window.FirstLineAnalytics.setOfflineSink, 'undefined', hostname);
+  }
+});
+
+test('each exact approved loopback hostname retains local sink injection', () => {
+  for (const hostname of ['localhost', '127.0.0.1', '[::1]']) {
+    const app = load({ hostname });
+    const records = [];
+    assert.equal(app.window.FirstLineAnalytics.setOfflineSink((record) => records.push(record)), true, hostname);
+    assert.equal(app.window.FirstLineAnalytics.track('page_view', { page: 'home' }), true, hostname);
+    assert.equal(records.length, 1, hostname);
+  }
 });
 
 test('a throwing local-test sink cannot block hash navigation, successful submission, error UI, or later actions', async () => {

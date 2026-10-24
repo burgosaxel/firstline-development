@@ -7,20 +7,24 @@ const analytics = (() => {
     '': 'home',
     '/': 'home',
     '/index.html': 'home',
+    '/pricing': 'pricing',
     '/pricing.html': 'pricing',
+    '/privacy': 'privacy',
     '/privacy.html': 'privacy',
+    '/terms': 'terms',
     '/terms.html': 'terms'
   });
   const contract = Object.freeze({
     page_view: Object.freeze({ page: Object.freeze(['home', 'pricing', 'privacy', 'terms']) }),
     section_navigation: Object.freeze({ section: Object.freeze(['work', 'services', 'process', 'about']) }),
-    contact_cta_click: Object.freeze({ placement: Object.freeze(['nav', 'hero', 'sales', 'final']) }),
+    contact_cta_click: Object.freeze({ placement: Object.freeze(['nav', 'hero', 'sales', 'final', 'pricing']) }),
     portfolio_project_click: Object.freeze({ project: Object.freeze(['bloom_infive', 'ebanisteria_cad', 'tripletas_la_union']) }),
     inquiry_submit_attempt: Object.freeze({}),
     inquiry_submit_success: Object.freeze({}),
-    inquiry_submit_error: Object.freeze({ reason: Object.freeze(['configuration', 'network', 'server', 'response']) })
+    inquiry_submit_error: Object.freeze({ reason: Object.freeze(['network', 'server', 'response']) })
   });
   const viewedDocuments = new WeakSet();
+  const canUseOfflineSink = Object.freeze(['localhost', '127.0.0.1', '[::1]']).includes(window.location.hostname);
   let offlineSink = null;
 
   const sanitize = (name, params = {}) => {
@@ -45,7 +49,13 @@ const analytics = (() => {
     if (!sanitized) return false;
 
     const record = Object.freeze({ schema_version: 1, name, params: sanitized });
-    if (offlineSink) offlineSink(record);
+    if (offlineSink) {
+      try {
+        offlineSink(record);
+      } catch {
+        // Local test instrumentation must never affect visitor workflows.
+      }
+    }
     return true;
   };
 
@@ -60,7 +70,9 @@ const analytics = (() => {
     contract,
     initializeDocument,
     setOfflineSink(sink) {
+      if (!canUseOfflineSink) return false;
       offlineSink = typeof sink === 'function' ? sink : null;
+      return true;
     },
     track
   }));
@@ -250,7 +262,8 @@ const contactPlacements = new Map([
   ['nav-cta', 'nav'],
   ['hero-actions', 'hero'],
   ['sales-cta', 'sales'],
-  ['final-cta', 'final']
+  ['final-cta', 'final'],
+  ['pricing-cta', 'pricing']
 ]);
 
 document.querySelectorAll('a[href="/connect"]').forEach((link) => {
@@ -309,7 +322,6 @@ if (form) {
     }
 
     if (!CONTACT_ENDPOINT) {
-      analytics.track('inquiry_submit_error', { reason: 'configuration' });
       if (formError) {
         formError.hidden = false;
         formError.textContent = 'The contact form is not ready yet. Please try again later.';
@@ -355,16 +367,23 @@ if (form) {
         body: JSON.stringify(payload)
       });
 
-      const result = await response.json().catch(() => ({}));
+      let result = null;
+      if (typeof response.json === 'function') {
+        try {
+          result = await response.json();
+        } catch {
+          result = null;
+        }
+      }
 
       if (!response.ok) {
         submitFailureReason = 'server';
-        throw new Error(result.error || 'Unable to send your message right now.');
+        throw new Error(result?.error || 'Unable to send your message right now.');
       }
 
-      if (!result.ok) {
+      if (!result || result.ok !== true) {
         submitFailureReason = 'response';
-        throw new Error(result.error || 'Unable to send your message right now.');
+        throw new Error(result?.error || 'Unable to send your message right now.');
       }
 
       analytics.track('inquiry_submit_success');

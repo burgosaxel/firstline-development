@@ -57,20 +57,21 @@ class MockElement {
 }
 
 class MockForm extends MockElement {
-  constructor(values) {
+  constructor(values, valid = true) {
     super();
     this.formValues = values;
+    this.valid = valid;
     this.submitButton = new MockElement();
     this.submitButton.textContent = 'Start My Project';
     this.resetCount = 0;
   }
 
   checkValidity() {
-    return true;
+    return this.valid;
   }
 
   reportValidity() {
-    throw new Error('unexpected validation report');
+    this.reportedValidity = true;
   }
 
   querySelector(selector) {
@@ -104,14 +105,18 @@ const formValues = {
   website: ''
 };
 
-function load({ pathname = '/', form = null, fetchImpl = async () => ({ ok: true, json: async () => ({ ok: true }) }) } = {}) {
+function load({ hostname = 'localhost', pathname = '/', form = null, fetchImpl = async () => ({ ok: true, json: async () => ({ ok: true }) }) } = {}) {
   const hashWork = new MockElement({ attributes: { href: '#work' } });
   const hashUnsafe = new MockElement({ attributes: { href: '#not[a-valid-selector' } });
   const contacts = [
     new MockElement({ attributes: { href: '/connect' }, classes: ['nav-cta'] }),
+    new MockElement({ attributes: { href: '/connect' }, classes: ['nav-cta'] }),
+    new MockElement({ attributes: { href: '/connect' }, classes: ['nav-cta'] }),
+    new MockElement({ attributes: { href: '/connect' }, classes: ['nav-cta'] }),
     new MockElement({ attributes: { href: '/connect' }, classes: ['hero-actions'] }),
     new MockElement({ attributes: { href: '/connect' }, classes: ['sales-cta'] }),
-    new MockElement({ attributes: { href: '/connect' }, classes: ['final-cta'] })
+    new MockElement({ attributes: { href: '/connect' }, classes: ['final-cta'] }),
+    new MockElement({ attributes: { href: '/connect' }, classes: ['pricing-cta'] })
   ];
   const projects = ['bloom_infive', 'ebanisteria_cad', 'tripletas_la_union'].map((projectKey) => new MockElement({ dataset: { projectKey } }));
   const header = new MockElement({ classes: ['site-header'] });
@@ -151,7 +156,7 @@ function load({ pathname = '/', form = null, fetchImpl = async () => ({ ok: true
   };
   header.querySelectorAll = () => [];
   const window = {
-    location: { pathname },
+    location: { hostname, pathname },
     matchMedia: () => ({ matches: false }),
     scrollY: 10,
     scrollTo: (options) => scrollCalls.push(options)
@@ -178,7 +183,7 @@ function load({ pathname = '/', form = null, fetchImpl = async () => ({ ok: true
 
 function capture(analytics) {
   const records = [];
-  analytics.setOfflineSink((record) => records.push(record));
+  assert.equal(analytics.setOfflineSink((record) => records.push(record)), true);
   return records;
 }
 
@@ -215,14 +220,79 @@ test('disabled default has no sink or transport, and accepted records are copied
   assert.equal(fetchCalls, 0);
 });
 
-test('page identity is allowlisted and initialization records one view per document', () => {
+test('page identity accepts deployed clean URLs and .html aliases exactly once, but rejects unknown paths', () => {
+  for (const [pathname, page] of [
+    ['', 'home'], ['/', 'home'], ['/index.html', 'home'],
+    ['/pricing', 'pricing'], ['/pricing.html', 'pricing'],
+    ['/privacy', 'privacy'], ['/privacy.html', 'privacy'],
+    ['/terms', 'terms'], ['/terms.html', 'terms']
+  ]) {
+    const app = load();
+    const records = capture(app.window.FirstLineAnalytics);
+    const pageDocument = {};
+    assert.equal(app.window.FirstLineAnalytics.initializeDocument(pageDocument, pathname), true, pathname);
+    assert.equal(app.window.FirstLineAnalytics.initializeDocument(pageDocument, pathname), false, pathname);
+    assert.deepEqual(plain(records), [{ schema_version: 1, name: 'page_view', params: { page } }], pathname);
+  }
   const app = load();
   const records = capture(app.window.FirstLineAnalytics);
-  const pageDocument = {};
-  assert.equal(app.window.FirstLineAnalytics.initializeDocument(pageDocument, '/pricing.html'), true);
-  assert.equal(app.window.FirstLineAnalytics.initializeDocument(pageDocument, '/pricing.html'), false);
-  assert.equal(app.window.FirstLineAnalytics.initializeDocument({}, '/unapproved.html'), false);
-  assert.deepEqual(plain(records), [{ schema_version: 1, name: 'page_view', params: { page: 'pricing' } }]);
+  assert.equal(app.window.FirstLineAnalytics.initializeDocument({}, '/unapproved'), false);
+  assert.equal(records.length, 0);
+});
+
+test('production origins reject offline sink injection without changing accepted event behavior', () => {
+  const app = load({ hostname: 'firstline-development.web.app' });
+  const analytics = app.window.FirstLineAnalytics;
+  const records = [];
+  assert.equal(analytics.setOfflineSink((record) => records.push(record)), false);
+  assert.equal(analytics.track('page_view', { page: 'home' }), true);
+  assert.deepEqual(records, []);
+});
+
+test('a throwing local-test sink cannot block hash navigation, successful submission, error UI, or later actions', async () => {
+  const successfulForm = new MockForm(formValues);
+  let successfulRequests = 0;
+  const successfulApp = load({
+    form: successfulForm,
+    fetchImpl: async () => {
+      successfulRequests += 1;
+      return { ok: true, json: async () => ({ ok: true }) };
+    }
+  });
+  assert.equal(successfulApp.window.FirstLineAnalytics.setOfflineSink(() => { throw new Error('offline sink failure'); }), true);
+  await successfulApp.hashWork.emit('click');
+  await successfulForm.emit('submit');
+  await successfulApp.contacts[7].emit('click', { target: new MockElement() });
+  assert.equal(successfulRequests, 1);
+  assert.equal(successfulForm.resetCount, 1);
+  assert.equal(successfulApp.historyCalls.length, 1);
+  assert.equal(successfulApp.successState.hidden, false);
+
+  const failedForm = new MockForm(formValues);
+  let failedRequests = 0;
+  const failedApp = load({
+    form: failedForm,
+    fetchImpl: async () => {
+      failedRequests += 1;
+      throw new Error('network unavailable');
+    }
+  });
+  assert.equal(failedApp.window.FirstLineAnalytics.setOfflineSink(() => { throw new Error('offline sink failure'); }), true);
+  await failedForm.emit('submit');
+  assert.equal(failedRequests, 1);
+  assert.equal(failedApp.formError.hidden, false);
+  assert.equal(failedApp.formError.textContent, 'network unavailable');
+});
+
+test('invalid form interactions retain browser validation behavior and emit no submission event or request', async () => {
+  const form = new MockForm(formValues, false);
+  let requests = 0;
+  const app = load({ form, fetchImpl: async () => { requests += 1; return { ok: true, json: async () => ({ ok: true }) }; } });
+  const records = capture(app.window.FirstLineAnalytics);
+  await form.emit('submit');
+  assert.equal(form.reportedValidity, true);
+  assert.equal(requests, 0);
+  assert.deepEqual(records, []);
 });
 
 test('hash navigation preserves scrolling and history, excludes unsafe hashes, and re-evaluation does not duplicate listeners', async () => {
@@ -249,9 +319,13 @@ test('real contact and portfolio callsites use only approved coarse enums', asyn
   for (const project of app.projects) await project.emit('click');
   assert.deepEqual(plain(records), [
     { schema_version: 1, name: 'contact_cta_click', params: { placement: 'nav' } },
+    { schema_version: 1, name: 'contact_cta_click', params: { placement: 'nav' } },
+    { schema_version: 1, name: 'contact_cta_click', params: { placement: 'nav' } },
+    { schema_version: 1, name: 'contact_cta_click', params: { placement: 'nav' } },
     { schema_version: 1, name: 'contact_cta_click', params: { placement: 'hero' } },
     { schema_version: 1, name: 'contact_cta_click', params: { placement: 'sales' } },
     { schema_version: 1, name: 'contact_cta_click', params: { placement: 'final' } },
+    { schema_version: 1, name: 'contact_cta_click', params: { placement: 'pricing' } },
     { schema_version: 1, name: 'portfolio_project_click', params: { project: 'bloom_infive' } },
     { schema_version: 1, name: 'portfolio_project_click', params: { project: 'ebanisteria_cad' } },
     { schema_version: 1, name: 'portfolio_project_click', params: { project: 'tripletas_la_union' } }
@@ -261,8 +335,10 @@ test('real contact and portfolio callsites use only approved coarse enums', asyn
 for (const scenario of [
   { name: 'success', response: { ok: true, json: async () => ({ ok: true }) }, expected: ['inquiry_submit_attempt', 'inquiry_submit_success'], reset: 1 },
   { name: 'HTTP failure', response: { ok: false, json: async () => ({ ok: true, error: 'private server detail' }) }, expected: ['inquiry_submit_attempt', 'inquiry_submit_error:server'], reset: 0 },
-  { name: 'result failure', response: { ok: true, json: async () => ({ ok: false, error: 'private response detail' }) }, expected: ['inquiry_submit_attempt', 'inquiry_submit_error:response'], reset: 0 },
-  { name: 'malformed response', response: { ok: true, json: async () => { throw new Error('not JSON'); } }, expected: ['inquiry_submit_attempt', 'inquiry_submit_error:response'], reset: 0 },
+  { name: 'false result', response: { ok: true, json: async () => ({ ok: false, error: 'private response detail' }) }, expected: ['inquiry_submit_attempt', 'inquiry_submit_error:response'], reset: 0 },
+  { name: 'missing result.ok', response: { ok: true, json: async () => ({}) }, expected: ['inquiry_submit_attempt', 'inquiry_submit_error:response'], reset: 0 },
+  { name: 'rejected response.json', response: { ok: true, json: async () => { throw new Error('not JSON'); } }, expected: ['inquiry_submit_attempt', 'inquiry_submit_error:response'], reset: 0 },
+  { name: 'missing response.json', response: { ok: true }, expected: ['inquiry_submit_attempt', 'inquiry_submit_error:response'], reset: 0 },
   { name: 'network failure', error: new Error('private network detail'), expected: ['inquiry_submit_attempt', 'inquiry_submit_error:network'], reset: 0 }
 ]) {
   test(`inquiry ${scenario.name} preserves endpoint flow and records only coarse semantics`, async () => {

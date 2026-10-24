@@ -2,7 +2,7 @@
 
 ## Status and boundary
 
-This is a disabled-by-default, provider-agnostic browser event seam for FirstLine Development. It has no configured sink by default, does not load a provider, and does not send, store, identify, or otherwise transmit analytics data. The only injection point is `window.FirstLineAnalytics.setOfflineSink()`, intended for local tests and a separately authorized future adapter.
+This is a disabled-by-default, provider-agnostic browser event seam for FirstLine Development. It has no configured sink by default, does not load a provider, and does not send, store, identify, or otherwise transmit analytics data. `window.FirstLineAnalytics.setOfflineSink()` is accepted only when the current hostname is an exact loopback host (`localhost`, `127.0.0.1`, or `[::1]`) for local tests; production origins reject it. A sink exception is contained at the analytics boundary and cannot affect visitor workflows.
 
 No analytics provider, provider ID, credential, tag loader, cookie, local storage, fingerprint, URL/referrer capture, or transport is part of this implementation. Enabling a provider, attaching a resource, approving privacy/consent treatment, publishing source, and observing provider receipt are separate approval gates.
 
@@ -22,17 +22,17 @@ The seam rejects unknown event names, parameter keys, missing/extra keys, and va
 | --- | --- | --- |
 | `page_view` | `page`: `home`, `pricing`, `privacy`, `terms` | One manual document view for the actual local document identity. |
 | `section_navigation` | `section`: `work`, `services`, `process`, `about` | An intentional same-document navigation to an existing approved section. |
-| `contact_cta_click` | `placement`: `nav`, `hero`, `sales`, `final` | A click on an existing `/connect` call-to-action. It is not a consultation, booking, lead, sale, or contact completion. |
+| `contact_cta_click` | `placement`: `nav`, `hero`, `sales`, `final`, `pricing` | A click on an existing `/connect` call-to-action. It is not a consultation, booking, lead, sale, or contact completion. |
 | `portfolio_project_click` | `project`: `bloom_infive`, `ebanisteria_cad`, `tripletas_la_union` | A click on a source-owned existing portfolio outbound action. No URL or link text is recorded. |
 | `inquiry_submit_attempt` | none | One valid existing form submission entering the existing request flow. Browser-invalid interactions are not attempts. |
 | `inquiry_submit_success` | none | Only emitted after the existing request has both HTTP success and `result.ok === true`. It means the application received that endpoint acknowledgement only; it does not prove a lead, sale, booking, client, or delivered email. |
-| `inquiry_submit_error` | `reason`: `configuration`, `network`, `server`, `response` | A coarse outcome only. No exception, server message, response body, or form value is recorded. |
+| `inquiry_submit_error` | `reason`: `network`, `server`, `response` | A coarse outcome only. `network` is an actual request rejection, `server` is an HTTP non-success response, and `response` is malformed or negative HTTP-success response data. No exception, server message, response body, or form value is recorded. |
 
 No social event is present because the current source has no real social link callsite.
 
 ## Page and hash rules
 
-`script.js` owns manual document views for the first-party document allowlist shown above. It records a document only once per document object, including repeated script initialization. Hash navigation is not a document view.
+`script.js` owns manual document views for the first-party document allowlist shown above: home forms (``, `/`, `/index.html`), deployed clean URLs (`/pricing`, `/privacy`, `/terms`), and their `.html` aliases. It records a document only once per document object, including repeated script initialization. Hash navigation is not a document view; unknown paths are rejected.
 
 Existing approved `#work`, `#services`, `#process`, and `#about` navigation retains the established smooth-scroll and `history.pushState` behavior. A section event is emitted only after an approved target exists and is intentionally selected. Unrecognized, nonexistent, and invalid selector hashes do not emit a section event. Separate genuine reactivations may emit again; duplicate setup/listeners cannot double emit.
 

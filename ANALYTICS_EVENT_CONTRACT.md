@@ -4,7 +4,7 @@
 
 This is a fail-closed browser event seam for FirstLine Development. By default it has no provider transport, does not load provider code, and does not transmit analytics data. `window.FirstLineAnalytics.setOfflineSink()` is accepted only when the current hostname is an exact loopback host (`localhost`, `127.0.0.1`, or `[::1]`) for local tests; production origins reject it. A sink exception is contained at the analytics boundary and cannot affect visitor workflows.
 
-The candidate persists only an affirmative/rejected first-party consent choice. Provider activation remains impossible unless affirmative consent, an explicit activation gate, a valid non-placeholder measurement ID, and an approved host all exist. The checked-in production measurement ID is deliberately non-working pending owner verification. Enabling a provider, attaching a resource, publishing source, and observing provider receipt remain separate approval gates.
+The candidate persists only an affirmative/rejected first-party consent choice. Provider activation remains impossible unless affirmative consent, the explicit local activation gate, the verified `G-BLK8DL1WDG` measurement ID, and an approved host all exist. That ID maps to the sole `firstlinedev.com Production` web stream (`properties/561169935/dataStreams/16223419464`) in GA4 property `properties/561169935`; it cannot activate from a local loopback test or an unapproved host. Enabling a provider on a deployed site, publishing source, and observing provider receipt remain separate approval gates.
 
 ## Record shape and immutability
 
@@ -41,7 +41,7 @@ If a future GA4 tag is separately approved, its automatic `page_view` behavior m
 ## Approval gates before any enablement
 
 1. Owner approval for the exact analytics purpose and privacy notice/consent approach.
-2. Authorized provider resource and host binding, with no browser credential or provider ID added until approved.
-3. Explicit enablement and tag implementation review, including page-view deduplication.
-4. Independent offline QA of the exact candidate, then separate publishing/deployment approval.
+2. Verified provider resource and host binding: GA4 account `accounts/405718522`, property `properties/561169935` (FirstLine Development — firstlinedev.com Production), and its sole stream `properties/561169935/dataStreams/16223419464` for `https://firstlinedev.com`.
+3. Explicit local enablement and tag implementation review, including page-view deduplication.
+4. Independent offline QA of the exact candidate, then separate Stage 2 publishing/deployment approval.
 5. Any production observation or controlled event requires its own authorization; no local test record is provider evidence.

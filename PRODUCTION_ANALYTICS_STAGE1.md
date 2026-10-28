@@ -2,7 +2,7 @@
 
 ## Status and immutable baseline
 
-This is an undeployed, fail-closed local candidate. It starts from Packet-B commit `d50533b7ab86678177a1656d897a8637f307a496` on branch `firstline-development/stage1-firstlinedev-production-analytics`. Canonical `main` and `origin/main` were both verified at `f484411488a5b3d044977185b200baaf40f6f6fe` before implementation.
+This is an undeployed, consent-gated local candidate. It starts from Packet-B commit `d50533b7ab86678177a1656d897a8637f307a496` on branch `firstline-development/stage1-firstlinedev-production-analytics`. Canonical `main` and `origin/main` were both verified at `f484411488a5b3d044977185b200baaf40f6f6fe` before implementation. Its local production activation gate is authorized and set to true, but that does not authorize publication, deployment, live tracking, or provider receipt.
 
 No deployment, Firebase Hosting release, live provider receipt, production milestone, provider-resource creation, Search Console verification, billing change, authenticated-provider access, or credential use occurred in this Stage 1 work.
 
@@ -21,7 +21,7 @@ The public extraction mechanism did not expose response ETag or Last-Modified me
 
 The implementation is basic opt-in. Before affirmative consent, it loads no Google provider script and sends no provider requests. The only persisted value is the first-party `firstline-analytics-consent` choice (`accepted` or `rejected`). Reject prevents provider loading. Privacy Preferences reopens the equivalent Accept analytics and Reject analytics controls; rejection/withdrawal selects `rejected`, sends a Google consent update to denied only when the provider was previously loaded, and prevents future event dispatch.
 
-The configuration has one deliberately non-working measurement-ID placeholder in `script.js`: `G-PRODUCTION-ID-REQUIRED`. It is not an actual identifier and is never an activation value. A final verified production web-stream measurement ID must replace it only after owner-side creation and verification.
+The configuration has one auditable runtime measurement-ID location in `script.js`: `G-BLK8DL1WDG`. It is the verified measurement ID for the mapped production stream. The local activation gate is true, but the approved-host and affirmative-consent checks remain mandatory; no provider code loads before consent.
 
 Production hosts are exactly `firstlinedev.com`, `www.firstlinedev.com`, and `firstline-development.web.app`; localhost, loopback, preview, GitHub Pages, and unrelated hosts fail closed. The only test configuration injection is accepted on exact loopback hosts. It never loads a network script.
 
@@ -29,15 +29,13 @@ Production hosts are exactly `firstlinedev.com`, `www.firstlinedev.com`, and `fi
 
 No form values, free text, contact data, URL query, raw hash, document referrer, user ID, user property, or unapproved identifier is dispatched.
 
-## Owner-side gates before any deployment
+## Verified provider mapping and remaining deployment gate
 
-1. Create or identify exactly one verified GA4 property and web stream under account `405718522` as approved: FirstLine Development — firstlinedev.com Production, America/New_York, USD, stream name `firstlinedev.com Production`, URL `https://firstlinedev.com`.
-2. Supply the verified GA4 property ID and production web-stream measurement ID to Director. The measurement ID has one placeholder location in `script.js`; Stage 1 must also receive the verified activation-gate decision before it can be considered activatable.
-3. Configure Enhanced Measurement off; manual page views only; event-level retention two months; minimal data sharing; email and URL-query redaction; no Ads linking, advertising features, Google Signals, ad personalization, or ad-user-data features.
-4. Owner must verify the authorized `firstlinedev.com` Search Console Domain property manually and provide verification evidence. Search Console must not add a visitor tag.
-5. Obtain separate Stage 2 deployment authorization and repeat independent QA against the exact final candidate.
-
-The missing owner-side activation bundle is: verified GA4 property ID, verified production web-stream measurement ID, explicit activation-gate authorization, and verified `firstlinedev.com` Search Console Domain ownership. Automated verification of the alternate authorized Google account was rejected by Google before any password entry; no credential was requested or used.
+1. Verified GA4 account: `accounts/405718522` (FirstLine Development); property: `properties/561169935` (FirstLine Development — firstlinedev.com Production), timezone America/New_York, currency USD.
+2. Verified sole web stream: `properties/561169935/dataStreams/16223419464`, named `firstlinedev.com Production`, canonical URL `https://firstlinedev.com`, measurement ID `G-BLK8DL1WDG`. The ID appears in one auditable runtime configuration location in `script.js`.
+3. Verified property settings: event-level retention `TWO_MONTHS`; Google Signals disabled; Enhanced Measurement master stream switch off; global ads personalization disallowed. The website continues to set `send_page_view=false`, `allow_google_signals=false`, `allow_ad_personalization_signals=false`, and denied `ad_storage`, `ad_user_data`, and `ad_personalization` before the consent-gated tag loader.
+4. Verified Search Console Domain property: `sc-domain:firstlinedev.com`, permission level `siteOwner`. Its Google verification TXT is already publicly present; this record does not reproduce the token. Search Console provides aggregate search performance and does not add a visitor tracking tag.
+5. The sole remaining gate is separate Stage 2 authorization to deploy/publish this exact independently QA-approved candidate. No deployment, production-site modification, live provider request, or live receipt occurred during Stage 1.
 
 ## Future deployment and rollback procedure (not executed)
 
@@ -50,12 +48,6 @@ The missing owner-side activation bundle is: verified GA4 property ID, verified 
 
 ## Candidate evidence
 
-- Candidate implementation commits: `c6ae1b22d1b1e32bfedbec7eb37ecc2dbee4f7b9` and `dd02ac9887db6d52a9989af3376b33fb580d9211`
-- Final candidate SHA-256 (before this evidence-record update):
-  - `script.js`: `d428d216f9bd34ec246239a1ffb612b1da11adea2ffc7df6bd42db65f77ff41d`
-  - `index.html`: `5ebb27a51c8ea65effae2eae7019d108d69b8874724421721c77dd22d287a4ef`
-  - `styles.css`: `ff58f2ad46afe93d6e7799babbd1d55c5aac58380d2b0a4dbafb94f7197b8aeb`
-  - `privacy.html`: `4936b08b2d2abeff726805a4f1f7876d6acb7bc24e05b998f877002800a5d538`
-  - `ANALYTICS_EVENT_CONTRACT.md`: `8ed98d57c3b0eab66defc23d0ef1f834c74be5d418e08bbf7b7e150436646155`
-  - `tests/analytics.test.mjs`: `34daa93d4d8c544ae178e248615a251b462e7ed95dbac70c1dc4f0faa7249679`
-- Tests: `node --test tests/analytics.test.mjs` (22/22), `node --check script.js`, `npm run lint --prefix functions`, and `git diff --check` all passed; the loopback DOM harness captures scripts instead of allowing any authentic provider network request.
+- Candidate implementation lineage: `c6ae1b22d1b1e32bfedbec7eb37ecc2dbee4f7b9`, `dd02ac9887db6d52a9989af3376b33fb580d9211`, `56fb39d9a7176ab1cc723d7371606b4b40e13b8d`, and `9220b8cb2f98b7ff89043692f245e09181a0a9f3`; the ID-complete local commit follows this record.
+- The final local commit SHA and final SHA-256 hashes for the authorized candidate files are captured in the Stage 1 handoff after this document is committed. This document does not embed its own hash to avoid a self-referential evidence value.
+- Tests: `node --test tests/analytics.test.mjs` (26/26), `node --check script.js`, `npm run lint --prefix functions`, `npm test --prefix functions --if-present`, and `git diff --check` passed before commit; the loopback DOM harness captures scripts instead of allowing any authentic provider network request.

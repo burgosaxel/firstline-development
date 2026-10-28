@@ -480,15 +480,34 @@ test('unknown and rejected consent never configure a provider, including after i
   assert.equal(app.appendedScripts.length, 0);
 });
 
-test('acceptance fails closed with the placeholder ID or a non-production host', async () => {
-  const placeholder = load();
-  await placeholder.acceptAnalytics.emit('click');
-  assert.equal(placeholder.window.FirstLineAnalytics.getConsent(), 'accepted');
-  assert.equal(placeholder.window.dataLayer, undefined);
+test('acceptance fails closed locally or on a non-production host without an approved loopback test configuration', async () => {
+  const defaultLocalCandidate = load();
+  await defaultLocalCandidate.acceptAnalytics.emit('click');
+  assert.equal(defaultLocalCandidate.window.FirstLineAnalytics.getConsent(), 'accepted');
+  assert.equal(defaultLocalCandidate.window.dataLayer, undefined);
 
   const nonProduction = load({ hostname: 'preview.example.test', testConfig: { measurementId: 'G-TEST12345', activationGate: true } });
   await nonProduction.acceptAnalytics.emit('click');
   assert.equal(nonProduction.window.dataLayer, undefined);
+});
+
+test('the verified production ID has one auditable runtime configuration location and the placeholder is absent', () => {
+  assert.equal((source.match(/G-BLK8DL1WDG/g) || []).length, 1);
+  assert.equal(source.includes(`G-${'PRODUCTION-ID-REQUIRED'}`), false);
+  assert.match(source, /const productionConfig = Object\.freeze\(\{ measurementId, activationGate: true \}\)/);
+});
+
+test('the approved production host activates exactly one mocked loader, config, and manual page view after consent', async () => {
+  const app = load({ hostname: 'firstlinedev.com' });
+  assert.equal(app.appendedScripts.length, 0);
+  await app.acceptAnalytics.emit('click');
+  const calls = app.window.dataLayer.map((args) => plain(Array.from(args)));
+  assert.equal(app.appendedScripts.length, 1);
+  assert.equal(app.appendedScripts[0].src, 'https://www.googletagmanager.com/gtag/js?id=G-BLK8DL1WDG');
+  assert.equal(calls.filter(([command]) => command === 'config').length, 1);
+  assert.equal(calls.filter(([command, name]) => command === 'event' && name === 'page_view').length, 1);
+  assert.equal(calls.find(([command]) => command === 'config')[2].send_page_view, false);
+  assert.equal(calls.find(([command]) => command === 'config')[2].page_referrer, '');
 });
 
 test('privacy preferences reopens the equal choice controls after rejection', async () => {

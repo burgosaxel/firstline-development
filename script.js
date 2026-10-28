@@ -27,8 +27,8 @@ const analytics = (() => {
   const viewedDocuments = new WeakSet();
   const productionHosts = Object.freeze(['firstlinedev.com', 'www.firstlinedev.com', 'firstline-development.web.app']);
   const loopbackHosts = Object.freeze(['localhost', '127.0.0.1', '[::1]']);
-  // Intentionally non-working until the owner supplies the verified production web-stream ID.
-  const measurementId = 'G-PRODUCTION-ID-REQUIRED';
+  // Verified FirstLine Development production web-stream measurement ID.
+  const measurementId = 'G-BLK8DL1WDG';
   const consentStorageKey = 'firstline-analytics-consent';
   const canUseOfflineSink = loopbackHosts.includes(window.location.hostname);
   const isProductionHost = productionHosts.includes(window.location.hostname);
@@ -50,7 +50,7 @@ const analytics = (() => {
     consent = value;
     try { window.localStorage?.setItem(consentStorageKey, value); } catch { /* storage is optional */ }
   };
-  const productionConfig = Object.freeze({ measurementId, activationGate: false });
+  const productionConfig = Object.freeze({ measurementId, activationGate: true });
   const getActivationConfig = () => {
     if (!canUseOfflineSink) return productionConfig;
     const testConfig = window.__FirstLineAnalyticsTestConfig;
@@ -58,8 +58,9 @@ const analytics = (() => {
   };
   const hasApprovedConfiguration = (config) => Boolean(
     config && config.activationGate === true && typeof config.measurementId === 'string' &&
-    /^G-[A-Z0-9]{6,15}$/.test(config.measurementId) && config.measurementId !== measurementId &&
-    (isProductionHost || canUseOfflineSink)
+    /^G-[A-Z0-9]{6,15}$/.test(config.measurementId) &&
+    ((isProductionHost && config.measurementId === measurementId) ||
+      (canUseOfflineSink && config.measurementId !== measurementId))
   );
   const canonicalPageLocation = () => `https://firstlinedev.com${window.location.pathname || '/'}`;
   const dispatchToProvider = (name, params) => {

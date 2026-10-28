@@ -19,25 +19,25 @@ The public extraction mechanism did not expose response ETag or Last-Modified me
 
 ## Privacy and event contract
 
-The implementation is basic opt-in. Before affirmative consent, it loads no Google provider script and sends no provider requests. The only persisted value is the first-party `firstline-analytics-consent` choice (`accepted` or `rejected`). Reject and Privacy Preferences withdrawal select `rejected` and prevent future dispatch.
+The implementation is basic opt-in. Before affirmative consent, it loads no Google provider script and sends no provider requests. The only persisted value is the first-party `firstline-analytics-consent` choice (`accepted` or `rejected`). Reject prevents provider loading. Privacy Preferences reopens the equivalent Accept analytics and Reject analytics controls; rejection/withdrawal selects `rejected`, sends a Google consent update to denied only when the provider was previously loaded, and prevents future event dispatch.
 
 The configuration has one deliberately non-working measurement-ID placeholder in `script.js`: `G-PRODUCTION-ID-REQUIRED`. It is not an actual identifier and is never an activation value. A final verified production web-stream measurement ID must replace it only after owner-side creation and verification.
 
 Production hosts are exactly `firstlinedev.com`, `www.firstlinedev.com`, and `firstline-development.web.app`; localhost, loopback, preview, GitHub Pages, and unrelated hosts fail closed. The only test configuration injection is accepted on exact loopback hosts. It never loads a network script.
 
-`script.js` is the sole manual page-view owner. It configures `send_page_view=false`, disables Google Signals and ad-personalization signals, and sends at most one manual page view after valid consent/configuration. Page location is sanitized to `https://firstlinedev.com` plus the path; query strings and document referrers are not read or sent. Event names and parameters remain the strict Packet-B allowlist in `ANALYTICS_EVENT_CONTRACT.md`; the only adapter-added field is sanitized `page_location` on `page_view`.
+`script.js` is the sole manual page-view owner. It configures `send_page_view=false`, disables Google Signals and ad-personalization signals, clears `page_referrer`, and sends at most one manual page view after valid consent/configuration. Page location is sanitized to `https://firstlinedev.com` plus the path; query strings and document referrers are not read or sent. The consent-gated loader has one path to `https://www.googletagmanager.com/gtag/js?id=…` and applies `referrerPolicy="no-referrer"`. Event names and parameters remain the strict Packet-B allowlist in `ANALYTICS_EVENT_CONTRACT.md`; the only adapter-added fields are sanitized `page_location` and empty `page_referrer` on `page_view`.
 
 No form values, free text, contact data, URL query, raw hash, document referrer, user ID, user property, or unapproved identifier is dispatched.
 
 ## Owner-side gates before any deployment
 
 1. Create or identify exactly one verified GA4 property and web stream under account `405718522` as approved: FirstLine Development — firstlinedev.com Production, America/New_York, USD, stream name `firstlinedev.com Production`, URL `https://firstlinedev.com`.
-2. Supply its verified production measurement ID to Director for the one placeholder location in `script.js`.
+2. Supply the verified GA4 property ID and production web-stream measurement ID to Director. The measurement ID has one placeholder location in `script.js`; Stage 1 must also receive the verified activation-gate decision before it can be considered activatable.
 3. Configure Enhanced Measurement off; manual page views only; event-level retention two months; minimal data sharing; email and URL-query redaction; no Ads linking, advertising features, Google Signals, ad personalization, or ad-user-data features.
-4. Owner must verify the authorized `firstlinedev.com` Search Console Domain property manually. Search Console must not add a visitor tag.
+4. Owner must verify the authorized `firstlinedev.com` Search Console Domain property manually and provide verification evidence. Search Console must not add a visitor tag.
 5. Obtain separate Stage 2 deployment authorization and repeat independent QA against the exact final candidate.
 
-The sole missing human input that blocks activation is the verified measurement ID for the approved production web stream. Automated verification of the alternate authorized Google account was rejected by Google before any password entry; no credential was requested or used.
+The missing owner-side activation bundle is: verified GA4 property ID, verified production web-stream measurement ID, explicit activation-gate authorization, and verified `firstlinedev.com` Search Console Domain ownership. Automated verification of the alternate authorized Google account was rejected by Google before any password entry; no credential was requested or used.
 
 ## Future deployment and rollback procedure (not executed)
 
@@ -50,12 +50,12 @@ The sole missing human input that blocks activation is the verified measurement 
 
 ## Candidate evidence
 
-- Candidate implementation commit: `c6ae1b22d1b1e32bfedbec7eb37ecc2dbee4f7b9`
+- Candidate implementation commits: `c6ae1b22d1b1e32bfedbec7eb37ecc2dbee4f7b9` and `dd02ac9887db6d52a9989af3376b33fb580d9211`
 - Final candidate SHA-256 (before this evidence-record update):
-  - `script.js`: `d80dc1f05ea4f2ee18ab081b9873e6f1cd4008ce0cac18e52242767c205221a6`
+  - `script.js`: `d428d216f9bd34ec246239a1ffb612b1da11adea2ffc7df6bd42db65f77ff41d`
   - `index.html`: `5ebb27a51c8ea65effae2eae7019d108d69b8874724421721c77dd22d287a4ef`
   - `styles.css`: `ff58f2ad46afe93d6e7799babbd1d55c5aac58380d2b0a4dbafb94f7197b8aeb`
   - `privacy.html`: `4936b08b2d2abeff726805a4f1f7876d6acb7bc24e05b998f877002800a5d538`
-  - `ANALYTICS_EVENT_CONTRACT.md`: `5ac4fa4aaf417366614b976462887c4dd52284436378e5b202ae351f70ea9570`
-  - `tests/analytics.test.mjs`: `8aa6acb389cf0ef1750afccb1763c2531b8072e361cb4d143039b938805c4cab`
-- Tests: `node --test tests/analytics.test.mjs`, `node --check script.js`, `git diff --check`; functions tests/lint are evaluated only where existing scripts are safe and relevant.
+  - `ANALYTICS_EVENT_CONTRACT.md`: `8ed98d57c3b0eab66defc23d0ef1f834c74be5d418e08bbf7b7e150436646155`
+  - `tests/analytics.test.mjs`: `34daa93d4d8c544ae178e248615a251b462e7ed95dbac70c1dc4f0faa7249679`
+- Tests: `node --test tests/analytics.test.mjs` (22/22), `node --check script.js`, `npm run lint --prefix functions`, and `git diff --check` all passed; the loopback DOM harness captures scripts instead of allowing any authentic provider network request.

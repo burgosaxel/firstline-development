@@ -526,7 +526,7 @@ test('privacy page renders the same operable analytics choice surface as the per
   assert.match(privacySource, /<section id="analytics-consent-notice"[\s\S]*?<button id="accept-analytics"[\s\S]*?<button id="reject-analytics"/);
 });
 
-test('re-evaluation before acceptance registers one analytics UI listener set and one provider activation path', async () => {
+test('re-evaluation before acceptance registers one analytics UI listener set and one local mock activation path', async () => {
   const app = load({ testConfig: { measurementId: 'G-TEST12345', activationGate: true } });
   const listenerCount = (element, type) => (element.listeners.get(type) || []).length;
   vm.runInContext(source, app.context, { filename: 'script.js' });
@@ -535,12 +535,12 @@ test('re-evaluation before acceptance registers one analytics UI listener set an
   assert.equal(listenerCount(app.preferences, 'click'), 1);
   await app.acceptAnalytics.emit('click');
   const calls = app.window.dataLayer.map((args) => plain(Array.from(args)));
-  assert.equal(app.appendedScripts.length, 1);
+  assert.equal(app.appendedScripts.length, 0);
   assert.equal(calls.filter(([command]) => command === 'config').length, 1);
   assert.equal(calls.filter(([command, name]) => command === 'event' && name === 'page_view').length, 1);
 });
 
-test('accepted exact-loopback test configuration owns one loader, one manual page view, and suppresses referrers', async () => {
+test('accepted exact-loopback test configuration uses one transport-free mock path, one manual page view, and suppresses referrers', async () => {
   const app = load({ testConfig: { measurementId: 'G-TEST12345', activationGate: true } });
   await app.acceptAnalytics.emit('click');
   const calls = app.window.dataLayer.map((args) => plain(Array.from(args)));
@@ -551,9 +551,8 @@ test('accepted exact-loopback test configuration owns one loader, one manual pag
   assert.equal(calls[2][0], 'js');
   assert.equal(JSON.stringify(calls[3]), JSON.stringify(['config', 'G-TEST12345', { send_page_view: false, allow_google_signals: false, allow_ad_personalization_signals: false, page_referrer: '' }]));
   assert.equal(JSON.stringify(calls[4]), JSON.stringify(['event', 'page_view', { page: 'home', page_location: 'https://firstlinedev.com/', page_referrer: '' }]));
-  assert.equal(app.appendedScripts.length, 1);
-  assert.equal(app.appendedScripts[0].src, 'https://www.googletagmanager.com/gtag/js?id=G-TEST12345');
-  assert.equal(app.appendedScripts[0].referrerPolicy, 'no-referrer');
+  assert.equal(app.appendedScripts.length, 0);
+  assert.equal(app.appendedScripts.some((script) => String(script.src || '').includes('googletagmanager.com')), false);
   await app.acceptAnalytics.emit('click');
   assert.equal(app.window.dataLayer.length, 5);
   await app.preferences.emit('click');
@@ -567,5 +566,5 @@ test('accepted exact-loopback test configuration owns one loader, one manual pag
   await app.preferences.emit('click');
   await app.acceptAnalytics.emit('click');
   assert.deepEqual(plain(Array.from(app.window.dataLayer[6])), ['consent', 'update', { analytics_storage: 'granted' }]);
-  assert.equal(app.appendedScripts.length, 1);
+  assert.equal(app.appendedScripts.length, 0);
 });

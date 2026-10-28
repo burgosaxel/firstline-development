@@ -44,7 +44,7 @@ No form values, free text, contact data, URL query, raw hash, document referrer,
 3. Deploy only after explicit Stage 2 authorization. Validate no pre-consent provider request, one manual page view after consent, no query/referrer/form-data payload, and no site regression.
 4. Stop immediately for a pre-consent request, wrong property or host, duplicate page view, forbidden payload, consent failure, or any site regression.
 5. Website rollback: release the captured prior Firebase Hosting release, or deploy the captured prior approved commit using a separately authorized deployment procedure.
-6. Provider-binding rollback: remove or disable the FirstLine production tag binding independently of the website rollback; retain the fail-closed placeholder code until a new authorized candidate exists.
+6. Provider-binding rollback: remove or disable the verified FirstLine production tag binding independently of the website rollback through a separately authorized provider change. Do not edit a live candidate to a placeholder; restore the captured prior approved website release or commit, and prepare any replacement analytics state as a new authorized, fail-closed candidate.
 
 ## Candidate evidence
 

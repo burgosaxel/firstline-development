@@ -72,6 +72,12 @@ const analytics = (() => {
   };
   const loadProviderScript = (config) => {
     if (providerLoadStarted || !document.createElement || !document.head?.appendChild) return false;
+    // Exact-loopback test activation uses only the local dataLayer mock. It must
+    // never append or fetch the authentic Google loader from a local preview.
+    if (canUseOfflineSink) {
+      providerLoadStarted = true;
+      return true;
+    }
     const script = document.createElement('script');
     script.async = true;
     script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(config.measurementId)}`;

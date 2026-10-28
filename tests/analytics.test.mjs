@@ -4,6 +4,7 @@ import test from 'node:test';
 import vm from 'node:vm';
 
 const source = await readFile(new URL('../script.js', import.meta.url), 'utf8');
+const privacySource = await readFile(new URL('../privacy.html', import.meta.url), 'utf8');
 
 class MockElement {
   constructor({ attributes = {}, classes = [], dataset = {} } = {}) {
@@ -499,6 +500,25 @@ test('privacy preferences reopens the equal choice controls after rejection', as
   await app.acceptAnalytics.emit('click');
   assert.equal(app.window.FirstLineAnalytics.getConsent(), 'accepted');
   assert.equal(app.appendedScripts.length, 0);
+});
+
+test('privacy page renders the same operable analytics choice surface as the persistent preferences control', () => {
+  assert.match(privacySource, /<button class="privacy-preferences" type="button" data-analytics-preferences>Privacy Preferences<\/button>/);
+  assert.match(privacySource, /<section id="analytics-consent-notice"[\s\S]*?<button id="accept-analytics"[\s\S]*?<button id="reject-analytics"/);
+});
+
+test('re-evaluation before acceptance registers one analytics UI listener set and one provider activation path', async () => {
+  const app = load({ testConfig: { measurementId: 'G-TEST12345', activationGate: true } });
+  const listenerCount = (element, type) => (element.listeners.get(type) || []).length;
+  vm.runInContext(source, app.context, { filename: 'script.js' });
+  assert.equal(listenerCount(app.acceptAnalytics, 'click'), 1);
+  assert.equal(listenerCount(app.rejectAnalytics, 'click'), 1);
+  assert.equal(listenerCount(app.preferences, 'click'), 1);
+  await app.acceptAnalytics.emit('click');
+  const calls = app.window.dataLayer.map((args) => plain(Array.from(args)));
+  assert.equal(app.appendedScripts.length, 1);
+  assert.equal(calls.filter(([command]) => command === 'config').length, 1);
+  assert.equal(calls.filter(([command, name]) => command === 'event' && name === 'page_view').length, 1);
 });
 
 test('accepted exact-loopback test configuration owns one loader, one manual page view, and suppresses referrers', async () => {

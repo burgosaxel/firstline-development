@@ -1,4 +1,8 @@
 (() => {
+const boundDocuments = window.__firstLineBoundDocuments || (window.__firstLineBoundDocuments = new WeakSet());
+if (boundDocuments.has(document)) return;
+boundDocuments.add(document);
+
 const analytics = (() => {
   const pageByPath = Object.freeze({
     '': 'home',
@@ -217,10 +221,6 @@ document.getElementById('reject-analytics')?.addEventListener('click', () => cho
   });
 });
 syncConsentUi();
-
-const boundDocuments = window.__firstLineBoundDocuments || (window.__firstLineBoundDocuments = new WeakSet());
-if (boundDocuments.has(document)) return;
-boundDocuments.add(document);
 
 const portfolioData = [
   {

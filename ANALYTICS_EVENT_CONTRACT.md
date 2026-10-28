@@ -36,7 +36,7 @@ No social event is present because the current source has no real social link ca
 
 Existing approved `#work`, `#services`, `#process`, and `#about` navigation retains the established smooth-scroll and `history.pushState` behavior. A section event is emitted only after an approved target exists and is intentionally selected. Unrecognized, nonexistent, and invalid selector hashes do not emit a section event. Separate genuine reactivations may emit again; duplicate setup/listeners cannot double emit.
 
-If a future GA4 tag is separately approved, its automatic `page_view` behavior must be reconciled or disabled, and enhanced history/hash page-view behavior must be disabled or otherwise deduplicated. The manual owner must remain the sole owner for these document views; hash actions must not become page views.
+The configured GA4 tag uses `send_page_view=false`. Owner UI verification and read-only Admin API evidence establish that Enhanced Measurement's master stream switch is off: `streamEnabled` is omitted/default false. Stored Enhanced Measurement subfeature preferences are dormant and not respected while that master switch is off; this contract does not claim they are individually false. No automatic Enhanced Measurement event, including history/hash page views, is authorized. The manual owner remains the sole owner for these document views; hash actions must not become page views. No provider mutation was performed or is needed for this Stage 1 candidate.
 
 ## Approval gates before any enablement
 

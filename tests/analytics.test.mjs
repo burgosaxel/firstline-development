@@ -138,6 +138,7 @@ function load({
   const acceptAnalytics = new MockElement();
   const rejectAnalytics = new MockElement();
   const preferences = new MockElement();
+  const appendedScripts = [];
   const storage = new Map(storedConsent ? [['firstline-analytics-consent', storedConsent]] : []);
   const targets = new Map([['#work', new MockElement()]]);
   const scrollCalls = [];
@@ -145,8 +146,12 @@ function load({
   const document = {
     clickListeners: [],
     documentElement: {},
+    head: { appendChild: (node) => { appendedScripts.push(node); return node; } },
     addEventListener(type, listener) {
       this.clickListeners.push([type, listener]);
+    },
+    createElement(tagName) {
+      return tagName === 'script' ? new MockElement() : new MockElement();
     },
     getElementById(id) {
       return {
@@ -208,7 +213,7 @@ function load({
     window
   });
   vm.runInContext(source, context, { filename: 'script.js' });
-  return { acceptAnalytics, consentNotice, contacts, context, document, formError, hashUnsafe, hashWork, historyCalls, portfolioGrid, preferences, projects, rejectAnalytics, scrollCalls, storage, successState, window };
+  return { acceptAnalytics, appendedScripts, consentNotice, contacts, context, document, formError, hashUnsafe, hashWork, historyCalls, portfolioGrid, preferences, projects, rejectAnalytics, scrollCalls, storage, successState, window };
 }
 
 function capture(analytics) {
@@ -463,6 +468,7 @@ test('unknown and rejected consent never configure a provider, including after i
   assert.equal(app.window.FirstLineAnalytics.getConsent(), 'unknown');
   assert.equal(app.consentNotice.hidden, false);
   assert.equal(app.window.dataLayer, undefined);
+  assert.equal(app.appendedScripts.length, 0);
   await app.contacts[0].emit('click');
   await app.rejectAnalytics.emit('click');
   assert.equal(app.window.FirstLineAnalytics.getConsent(), 'rejected');
@@ -470,6 +476,7 @@ test('unknown and rejected consent never configure a provider, including after i
   assert.equal(app.consentNotice.hidden, true);
   await app.hashWork.emit('click');
   assert.equal(app.window.dataLayer, undefined);
+  assert.equal(app.appendedScripts.length, 0);
 });
 
 test('acceptance fails closed with the placeholder ID or a non-production host', async () => {
@@ -483,7 +490,18 @@ test('acceptance fails closed with the placeholder ID or a non-production host',
   assert.equal(nonProduction.window.dataLayer, undefined);
 });
 
-test('accepted exact-loopback test configuration owns one manual page view and withdrawal stops dispatch', async () => {
+test('privacy preferences reopens the equal choice controls after rejection', async () => {
+  const app = load();
+  await app.rejectAnalytics.emit('click');
+  assert.equal(app.consentNotice.hidden, true);
+  await app.preferences.emit('click');
+  assert.equal(app.consentNotice.hidden, false);
+  await app.acceptAnalytics.emit('click');
+  assert.equal(app.window.FirstLineAnalytics.getConsent(), 'accepted');
+  assert.equal(app.appendedScripts.length, 0);
+});
+
+test('accepted exact-loopback test configuration owns one loader, one manual page view, and suppresses referrers', async () => {
   const app = load({ testConfig: { measurementId: 'G-TEST12345', activationGate: true } });
   await app.acceptAnalytics.emit('click');
   const calls = app.window.dataLayer.map((args) => plain(Array.from(args)));
@@ -492,12 +510,23 @@ test('accepted exact-loopback test configuration owns one manual page view and w
     ['consent', 'update', { analytics_storage: 'granted' }]
   ]));
   assert.equal(calls[2][0], 'js');
-  assert.equal(JSON.stringify(calls[3]), JSON.stringify(['config', 'G-TEST12345', { send_page_view: false, allow_google_signals: false, allow_ad_personalization_signals: false }]));
-  assert.equal(JSON.stringify(calls[4]), JSON.stringify(['event', 'page_view', { page: 'home', page_location: 'https://firstlinedev.com/' }]));
+  assert.equal(JSON.stringify(calls[3]), JSON.stringify(['config', 'G-TEST12345', { send_page_view: false, allow_google_signals: false, allow_ad_personalization_signals: false, page_referrer: '' }]));
+  assert.equal(JSON.stringify(calls[4]), JSON.stringify(['event', 'page_view', { page: 'home', page_location: 'https://firstlinedev.com/', page_referrer: '' }]));
+  assert.equal(app.appendedScripts.length, 1);
+  assert.equal(app.appendedScripts[0].src, 'https://www.googletagmanager.com/gtag/js?id=G-TEST12345');
+  assert.equal(app.appendedScripts[0].referrerPolicy, 'no-referrer');
   await app.acceptAnalytics.emit('click');
   assert.equal(app.window.dataLayer.length, 5);
   await app.preferences.emit('click');
+  assert.equal(app.consentNotice.hidden, false);
+  assert.equal(app.window.FirstLineAnalytics.getConsent(), 'accepted');
+  await app.rejectAnalytics.emit('click');
   assert.equal(app.window.FirstLineAnalytics.getConsent(), 'rejected');
+  assert.deepEqual(plain(Array.from(app.window.dataLayer[5])), ['consent', 'update', { analytics_storage: 'denied' }]);
   assert.equal(app.window.FirstLineAnalytics.track('section_navigation', { section: 'work' }), true);
-  assert.equal(app.window.dataLayer.length, 5);
+  assert.equal(app.window.dataLayer.length, 6);
+  await app.preferences.emit('click');
+  await app.acceptAnalytics.emit('click');
+  assert.deepEqual(plain(Array.from(app.window.dataLayer[6])), ['consent', 'update', { analytics_storage: 'granted' }]);
+  assert.equal(app.appendedScripts.length, 1);
 });

@@ -31,6 +31,7 @@ const analytics = (() => {
   let offlineSink = null;
   let currentPage = null;
   let providerLoaded = false;
+  let providerLoadStarted = false;
   let providerPageViewSent = false;
   const getStoredConsent = () => {
     try {
@@ -59,8 +60,20 @@ const analytics = (() => {
   const canonicalPageLocation = () => `https://firstlinedev.com${window.location.pathname || '/'}`;
   const dispatchToProvider = (name, params) => {
     if (!providerLoaded || consent !== 'accepted' || typeof window.gtag !== 'function') return false;
-    const providerParams = name === 'page_view' ? { page: params.page, page_location: canonicalPageLocation() } : params;
+    const providerParams = name === 'page_view'
+      ? { page: params.page, page_location: canonicalPageLocation(), page_referrer: '' }
+      : params;
     try { window.gtag('event', name, providerParams); return true; } catch { return false; }
+  };
+  const loadProviderScript = (config) => {
+    if (providerLoadStarted || !document.createElement || !document.head?.appendChild) return false;
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(config.measurementId)}`;
+    script.referrerPolicy = 'no-referrer';
+    document.head.appendChild(script);
+    providerLoadStarted = true;
+    return true;
   };
   const activateProvider = () => {
     const config = getActivationConfig();
@@ -70,7 +83,8 @@ const analytics = (() => {
     window.gtag('consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' });
     window.gtag('consent', 'update', { analytics_storage: 'granted' });
     window.gtag('js', new Date());
-    window.gtag('config', config.measurementId, { send_page_view: false, allow_google_signals: false, allow_ad_personalization_signals: false });
+    window.gtag('config', config.measurementId, { send_page_view: false, allow_google_signals: false, allow_ad_personalization_signals: false, page_referrer: '' });
+    if (!loadProviderScript(config)) return false;
     providerLoaded = true;
     if (currentPage && !providerPageViewSent) providerPageViewSent = dispatchToProvider('page_view', { page: currentPage });
     return true;
@@ -130,8 +144,26 @@ const analytics = (() => {
     },
     setConsent(value) {
       if (value !== 'accepted' && value !== 'rejected') return false;
+      const previousConsent = consent;
+      if (value === 'rejected' && providerLoaded && typeof window.gtag === 'function') {
+        try {
+          window.gtag('consent', 'update', { analytics_storage: 'denied' });
+        } catch {
+          // Consent withdrawal must not break visitor workflows.
+        }
+      }
       setStoredConsent(value);
-      if (value === 'accepted') activateProvider();
+      if (value === 'accepted') {
+        if (providerLoaded && previousConsent !== 'accepted' && typeof window.gtag === 'function') {
+          try {
+            window.gtag('consent', 'update', { analytics_storage: 'granted' });
+          } catch {
+            // Re-consent must not break visitor workflows.
+          }
+        } else {
+          activateProvider();
+        }
+      }
       return true;
     },
     track
@@ -176,7 +208,13 @@ const chooseAnalyticsConsent = (value) => {
 document.getElementById('accept-analytics')?.addEventListener('click', () => chooseAnalyticsConsent('accepted'));
 document.getElementById('reject-analytics')?.addEventListener('click', () => chooseAnalyticsConsent('rejected'));
 (document.querySelectorAll?.('[data-analytics-preferences]') || []).forEach((button) => {
-  button.addEventListener('click', () => chooseAnalyticsConsent('rejected'));
+  button.addEventListener('click', () => {
+    const notice = document.getElementById('analytics-consent-notice');
+    if (notice) {
+      notice.hidden = false;
+      document.getElementById('accept-analytics')?.focus?.();
+    }
+  });
 });
 syncConsentUi();
 

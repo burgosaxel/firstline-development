@@ -20,7 +20,7 @@ The seam rejects unknown event names, parameter keys, missing/extra keys, and va
 
 | Event | Exact allowed params | Meaning |
 | --- | --- | --- |
-| `page_view` | `page`: `home`, `pricing`, `privacy`, `terms` | One manual document view for the actual local document identity. The adapter may add only a sanitized canonical `page_location` (`https://firstlinedev.com` plus approved path), never a query string or referrer. |
+| `page_view` | `page`: `home`, `pricing`, `privacy`, `terms` | One manual document view for the actual local document identity. The adapter adds only a sanitized canonical `page_location` (`https://firstlinedev.com` plus approved path) and an empty `page_referrer`; it never sends a query string or document referrer. |
 | `section_navigation` | `section`: `work`, `services`, `process`, `about` | An intentional same-document navigation to an existing approved section. |
 | `contact_cta_click` | `placement`: `nav`, `hero`, `sales`, `final`, `pricing` | A click on an existing `/connect` call-to-action. It is not a consultation, booking, lead, sale, or contact completion. |
 | `portfolio_project_click` | `project`: `bloom_infive`, `ebanisteria_cad`, `tripletas_la_union` | A click on a source-owned existing portfolio outbound action. No URL or link text is recorded. |

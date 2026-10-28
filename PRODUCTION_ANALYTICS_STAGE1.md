@@ -48,6 +48,6 @@ No form values, free text, contact data, URL query, raw hash, document referrer,
 
 ## Candidate evidence
 
-- Candidate implementation lineage: `c6ae1b22d1b1e32bfedbec7eb37ecc2dbee4f7b9`, `dd02ac9887db6d52a9989af3376b33fb580d9211`, `56fb39d9a7176ab1cc723d7371606b4b40e13b8d`, and `9220b8cb2f98b7ff89043692f245e09181a0a9f3`; the ID-complete local commit follows this record.
-- The final local commit SHA and final SHA-256 hashes for the authorized candidate files are captured in the Stage 1 handoff after this document is committed. This document does not embed its own hash to avoid a self-referential evidence value.
+- Candidate implementation lineage: `c6ae1b22d1b1e32bfedbec7eb37ecc2dbee4f7b9`, `dd02ac9887db6d52a9989af3376b33fb580d9211`, `56fb39d9a7176ab1cc723d7371606b4b40e13b8d`, and `9220b8cb2f98b7ff89043692f245e09181a0a9f3`. The ID-complete implementation commit is `05a500828fd1fe11a9facc9ee5dddf1a0fcbc114` (parent `9220b8cb2f98b7ff89043692f245e09181a0a9f3`); this evidence-record commit follows it.
+- Final SHA-256 hashes for all authorized candidate files, including this self-referential evidence record, are captured in the Stage 1 handoff after the evidence-record commit. This document does not embed its own hash to avoid a self-referential evidence value.
 - Tests: `node --test tests/analytics.test.mjs` (26/26), `node --check script.js`, `npm run lint --prefix functions`, `npm test --prefix functions --if-present`, and `git diff --check` passed before commit; the loopback DOM harness captures scripts instead of allowing any authentic provider network request.

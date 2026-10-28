@@ -50,6 +50,12 @@ The sole missing human input that blocks activation is the verified measurement 
 
 ## Candidate evidence
 
-- Candidate commit: pending local commit
-- Final candidate SHA-256: pending finalization
+- Candidate implementation commit: `c6ae1b22d1b1e32bfedbec7eb37ecc2dbee4f7b9`
+- Final candidate SHA-256 (before this evidence-record update):
+  - `script.js`: `d80dc1f05ea4f2ee18ab081b9873e6f1cd4008ce0cac18e52242767c205221a6`
+  - `index.html`: `5ebb27a51c8ea65effae2eae7019d108d69b8874724421721c77dd22d287a4ef`
+  - `styles.css`: `ff58f2ad46afe93d6e7799babbd1d55c5aac58380d2b0a4dbafb94f7197b8aeb`
+  - `privacy.html`: `4936b08b2d2abeff726805a4f1f7876d6acb7bc24e05b998f877002800a5d538`
+  - `ANALYTICS_EVENT_CONTRACT.md`: `5ac4fa4aaf417366614b976462887c4dd52284436378e5b202ae351f70ea9570`
+  - `tests/analytics.test.mjs`: `8aa6acb389cf0ef1750afccb1763c2531b8072e361cb4d143039b938805c4cab`
 - Tests: `node --test tests/analytics.test.mjs`, `node --check script.js`, `git diff --check`; functions tests/lint are evaluated only where existing scripts are safe and relevant.

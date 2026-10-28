@@ -21,8 +21,60 @@ const analytics = (() => {
     inquiry_submit_error: Object.freeze({ reason: Object.freeze(['network', 'server', 'response']) })
   });
   const viewedDocuments = new WeakSet();
-  const canUseOfflineSink = Object.freeze(['localhost', '127.0.0.1', '[::1]']).includes(window.location.hostname);
+  const productionHosts = Object.freeze(['firstlinedev.com', 'www.firstlinedev.com', 'firstline-development.web.app']);
+  const loopbackHosts = Object.freeze(['localhost', '127.0.0.1', '[::1]']);
+  // Intentionally non-working until the owner supplies the verified production web-stream ID.
+  const measurementId = 'G-PRODUCTION-ID-REQUIRED';
+  const consentStorageKey = 'firstline-analytics-consent';
+  const canUseOfflineSink = loopbackHosts.includes(window.location.hostname);
+  const isProductionHost = productionHosts.includes(window.location.hostname);
   let offlineSink = null;
+  let currentPage = null;
+  let providerLoaded = false;
+  let providerPageViewSent = false;
+  const getStoredConsent = () => {
+    try {
+      const value = window.localStorage?.getItem(consentStorageKey);
+      return value === 'accepted' || value === 'rejected' ? value : 'unknown';
+    } catch {
+      return 'unknown';
+    }
+  };
+  let consent = getStoredConsent();
+  const setStoredConsent = (value) => {
+    consent = value;
+    try { window.localStorage?.setItem(consentStorageKey, value); } catch { /* storage is optional */ }
+  };
+  const productionConfig = Object.freeze({ measurementId, activationGate: false });
+  const getActivationConfig = () => {
+    if (!canUseOfflineSink) return productionConfig;
+    const testConfig = window.__FirstLineAnalyticsTestConfig;
+    return testConfig && typeof testConfig === 'object' ? testConfig : productionConfig;
+  };
+  const hasApprovedConfiguration = (config) => Boolean(
+    config && config.activationGate === true && typeof config.measurementId === 'string' &&
+    /^G-[A-Z0-9]{6,15}$/.test(config.measurementId) && config.measurementId !== measurementId &&
+    (isProductionHost || canUseOfflineSink)
+  );
+  const canonicalPageLocation = () => `https://firstlinedev.com${window.location.pathname || '/'}`;
+  const dispatchToProvider = (name, params) => {
+    if (!providerLoaded || consent !== 'accepted' || typeof window.gtag !== 'function') return false;
+    const providerParams = name === 'page_view' ? { page: params.page, page_location: canonicalPageLocation() } : params;
+    try { window.gtag('event', name, providerParams); return true; } catch { return false; }
+  };
+  const activateProvider = () => {
+    const config = getActivationConfig();
+    if (consent !== 'accepted' || providerLoaded || !hasApprovedConfiguration(config)) return false;
+    window.dataLayer = Array.isArray(window.dataLayer) ? window.dataLayer : [];
+    window.gtag = function gtag() { window.dataLayer.push(arguments); };
+    window.gtag('consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' });
+    window.gtag('consent', 'update', { analytics_storage: 'granted' });
+    window.gtag('js', new Date());
+    window.gtag('config', config.measurementId, { send_page_view: false, allow_google_signals: false, allow_ad_personalization_signals: false });
+    providerLoaded = true;
+    if (currentPage && !providerPageViewSent) providerPageViewSent = dispatchToProvider('page_view', { page: currentPage });
+    return true;
+  };
 
   const sanitize = (name, params = {}) => {
     const allowedParams = contract[name];
@@ -53,6 +105,7 @@ const analytics = (() => {
         // Local test instrumentation must never affect visitor workflows.
       }
     }
+    dispatchToProvider(name, sanitized);
     return true;
   };
 
@@ -60,6 +113,7 @@ const analytics = (() => {
     if (viewedDocuments.has(documentNode)) return false;
     viewedDocuments.add(documentNode);
     const page = pageByPath[pathname || ''];
+    if (page) currentPage = page;
     return page ? track('page_view', { page }) : false;
   };
 
@@ -71,9 +125,18 @@ const analytics = (() => {
       offlineSink = typeof sink === 'function' ? sink : null;
       return true;
     },
+    getConsent() {
+      return consent;
+    },
+    setConsent(value) {
+      if (value !== 'accepted' && value !== 'rejected') return false;
+      setStoredConsent(value);
+      if (value === 'accepted') activateProvider();
+      return true;
+    },
     track
   });
-  const productionFacade = Object.freeze({ contract, initializeDocument, track });
+  const productionFacade = Object.freeze({ contract, getConsent: ownedAnalytics.getConsent, initializeDocument, setConsent: ownedAnalytics.setConsent, track });
   const exposedAnalytics = canUseOfflineSink ? ownedAnalytics : productionFacade;
   const existingDescriptor = Object.getOwnPropertyDescriptor(window, 'FirstLineAnalytics');
 
@@ -94,6 +157,28 @@ const analytics = (() => {
 })();
 
 analytics.initializeDocument(document, window.location.pathname);
+
+const syncConsentUi = () => {
+  const notice = document.getElementById('analytics-consent-notice');
+  const preferences = document.querySelectorAll?.('[data-analytics-preferences]') || [];
+  const choice = analytics.getConsent();
+  if (notice) notice.hidden = choice !== 'unknown';
+  preferences.forEach((button) => {
+    button.textContent = choice === 'accepted' ? 'Privacy Preferences (analytics on)' : 'Privacy Preferences';
+  });
+};
+
+const chooseAnalyticsConsent = (value) => {
+  analytics.setConsent(value);
+  syncConsentUi();
+};
+
+document.getElementById('accept-analytics')?.addEventListener('click', () => chooseAnalyticsConsent('accepted'));
+document.getElementById('reject-analytics')?.addEventListener('click', () => chooseAnalyticsConsent('rejected'));
+(document.querySelectorAll?.('[data-analytics-preferences]') || []).forEach((button) => {
+  button.addEventListener('click', () => chooseAnalyticsConsent('rejected'));
+});
+syncConsentUi();
 
 const boundDocuments = window.__firstLineBoundDocuments || (window.__firstLineBoundDocuments = new WeakSet());
 if (boundDocuments.has(document)) return;

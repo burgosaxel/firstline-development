@@ -485,9 +485,21 @@
         <div class="legal-links">
           <a href="privacy.html">Privacy Policy</a>
           <a href="terms.html">Terms</a>
+          <button class="privacy-preferences" type="button" data-analytics-preferences>Privacy Preferences</button>
         </div>
       </div>
     </footer>
+
+    <section id="analytics-consent-notice" class="analytics-consent-notice" role="region" aria-label="Analytics privacy choices" hidden>
+      <div>
+        <h2>Optional analytics</h2>
+        <p>With your permission, we may use Google Analytics to understand approved page and site-interaction categories. We do not send inquiry form contents or query strings.</p>
+      </div>
+      <div class="analytics-consent-actions">
+        <button id="accept-analytics" class="button button-secondary" type="button">Accept analytics</button>
+        <button id="reject-analytics" class="button button-secondary" type="button">Reject analytics</button>
+      </div>
+    </section>
 
     <script src="script.js"></script>
   </body>

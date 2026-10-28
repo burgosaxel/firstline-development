@@ -1,10 +1,10 @@
-# Disabled analytics event contract
+# Consent-gated analytics event contract
 
 ## Status and boundary
 
-This is a disabled-by-default, provider-agnostic browser event seam for FirstLine Development. It has no configured sink by default, does not load a provider, and does not send, store, identify, or otherwise transmit analytics data. `window.FirstLineAnalytics.setOfflineSink()` is accepted only when the current hostname is an exact loopback host (`localhost`, `127.0.0.1`, or `[::1]`) for local tests; production origins reject it. A sink exception is contained at the analytics boundary and cannot affect visitor workflows.
+This is a fail-closed browser event seam for FirstLine Development. By default it has no provider transport, does not load provider code, and does not transmit analytics data. `window.FirstLineAnalytics.setOfflineSink()` is accepted only when the current hostname is an exact loopback host (`localhost`, `127.0.0.1`, or `[::1]`) for local tests; production origins reject it. A sink exception is contained at the analytics boundary and cannot affect visitor workflows.
 
-No analytics provider, provider ID, credential, tag loader, cookie, local storage, fingerprint, URL/referrer capture, or transport is part of this implementation. Enabling a provider, attaching a resource, approving privacy/consent treatment, publishing source, and observing provider receipt are separate approval gates.
+The candidate persists only an affirmative/rejected first-party consent choice. Provider activation remains impossible unless affirmative consent, an explicit activation gate, a valid non-placeholder measurement ID, and an approved host all exist. The checked-in production measurement ID is deliberately non-working pending owner verification. Enabling a provider, attaching a resource, publishing source, and observing provider receipt remain separate approval gates.
 
 ## Record shape and immutability
 
@@ -20,7 +20,7 @@ The seam rejects unknown event names, parameter keys, missing/extra keys, and va
 
 | Event | Exact allowed params | Meaning |
 | --- | --- | --- |
-| `page_view` | `page`: `home`, `pricing`, `privacy`, `terms` | One manual document view for the actual local document identity. |
+| `page_view` | `page`: `home`, `pricing`, `privacy`, `terms` | One manual document view for the actual local document identity. The adapter may add only a sanitized canonical `page_location` (`https://firstlinedev.com` plus approved path), never a query string or referrer. |
 | `section_navigation` | `section`: `work`, `services`, `process`, `about` | An intentional same-document navigation to an existing approved section. |
 | `contact_cta_click` | `placement`: `nav`, `hero`, `sales`, `final`, `pricing` | A click on an existing `/connect` call-to-action. It is not a consultation, booking, lead, sale, or contact completion. |
 | `portfolio_project_click` | `project`: `bloom_infive`, `ebanisteria_cad`, `tripletas_la_union` | A click on a source-owned existing portfolio outbound action. No URL or link text is recorded. |

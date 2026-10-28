@@ -111,7 +111,9 @@ function load({
   form = null,
   fetchImpl = async () => ({ ok: true, json: async () => ({ ok: true }) }),
   preseedAnalytics = null,
-  preseedAnalyticsDescriptor = null
+  preseedAnalyticsDescriptor = null,
+  storedConsent = null,
+  testConfig = null
 } = {}) {
   const hashWork = new MockElement({ attributes: { href: '#work' } });
   const hashUnsafe = new MockElement({ attributes: { href: '#not[a-valid-selector' } });
@@ -132,6 +134,11 @@ function load({
   const successState = new MockElement();
   const formError = new MockElement();
   const footer = new MockElement();
+  const consentNotice = new MockElement();
+  const acceptAnalytics = new MockElement();
+  const rejectAnalytics = new MockElement();
+  const preferences = new MockElement();
+  const storage = new Map(storedConsent ? [['firstline-analytics-consent', storedConsent]] : []);
   const targets = new Map([['#work', new MockElement()]]);
   const scrollCalls = [];
   const historyCalls = [];
@@ -142,7 +149,15 @@ function load({
       this.clickListeners.push([type, listener]);
     },
     getElementById(id) {
-      return { 'portfolio-grid': portfolioGrid, 'contact-form': form, 'success-state': successState, 'form-error': formError }[id] || null;
+      return {
+        'portfolio-grid': portfolioGrid,
+        'contact-form': form,
+        'success-state': successState,
+        'form-error': formError,
+        'analytics-consent-notice': consentNotice,
+        'accept-analytics': acceptAnalytics,
+        'reject-analytics': rejectAnalytics
+      }[id] || null;
     },
     querySelector(selector) {
       if (selector === '.site-header') return header;
@@ -158,12 +173,14 @@ function load({
       if (selector === 'a[href="/connect"]') return contacts;
       if (selector === '[data-project-key]') return projects;
       if (selector === '.reveal') return [];
+      if (selector === '[data-analytics-preferences]') return [preferences];
       return [];
     }
   };
   header.querySelectorAll = () => [];
   const window = {
     location: { hostname, pathname },
+    localStorage: { getItem: (key) => storage.get(key) || null, setItem: (key, value) => storage.set(key, String(value)) },
     matchMedia: () => ({ matches: false }),
     scrollY: 10,
     scrollTo: (options) => scrollCalls.push(options)
@@ -173,6 +190,7 @@ function load({
   } else if (preseedAnalytics) {
     window.FirstLineAnalytics = preseedAnalytics;
   }
+  if (testConfig) window.__FirstLineAnalyticsTestConfig = testConfig;
   const context = vm.createContext({
     Array,
     FormData: MockFormData,
@@ -190,7 +208,7 @@ function load({
     window
   });
   vm.runInContext(source, context, { filename: 'script.js' });
-  return { contacts, context, document, formError, hashUnsafe, hashWork, historyCalls, portfolioGrid, projects, scrollCalls, successState, window };
+  return { acceptAnalytics, consentNotice, contacts, context, document, formError, hashUnsafe, hashWork, historyCalls, portfolioGrid, preferences, projects, rejectAnalytics, scrollCalls, storage, successState, window };
 }
 
 function capture(analytics) {
@@ -439,3 +457,47 @@ for (const scenario of [
     assert.equal(serialized.includes(requests[0].url), false);
   });
 }
+
+test('unknown and rejected consent never configure a provider, including after interactions', async () => {
+  const app = load();
+  assert.equal(app.window.FirstLineAnalytics.getConsent(), 'unknown');
+  assert.equal(app.consentNotice.hidden, false);
+  assert.equal(app.window.dataLayer, undefined);
+  await app.contacts[0].emit('click');
+  await app.rejectAnalytics.emit('click');
+  assert.equal(app.window.FirstLineAnalytics.getConsent(), 'rejected');
+  assert.equal(app.storage.get('firstline-analytics-consent'), 'rejected');
+  assert.equal(app.consentNotice.hidden, true);
+  await app.hashWork.emit('click');
+  assert.equal(app.window.dataLayer, undefined);
+});
+
+test('acceptance fails closed with the placeholder ID or a non-production host', async () => {
+  const placeholder = load();
+  await placeholder.acceptAnalytics.emit('click');
+  assert.equal(placeholder.window.FirstLineAnalytics.getConsent(), 'accepted');
+  assert.equal(placeholder.window.dataLayer, undefined);
+
+  const nonProduction = load({ hostname: 'preview.example.test', testConfig: { measurementId: 'G-TEST12345', activationGate: true } });
+  await nonProduction.acceptAnalytics.emit('click');
+  assert.equal(nonProduction.window.dataLayer, undefined);
+});
+
+test('accepted exact-loopback test configuration owns one manual page view and withdrawal stops dispatch', async () => {
+  const app = load({ testConfig: { measurementId: 'G-TEST12345', activationGate: true } });
+  await app.acceptAnalytics.emit('click');
+  const calls = app.window.dataLayer.map((args) => plain(Array.from(args)));
+  assert.equal(JSON.stringify(calls.slice(0, 2)), JSON.stringify([
+    ['consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' }],
+    ['consent', 'update', { analytics_storage: 'granted' }]
+  ]));
+  assert.equal(calls[2][0], 'js');
+  assert.equal(JSON.stringify(calls[3]), JSON.stringify(['config', 'G-TEST12345', { send_page_view: false, allow_google_signals: false, allow_ad_personalization_signals: false }]));
+  assert.equal(JSON.stringify(calls[4]), JSON.stringify(['event', 'page_view', { page: 'home', page_location: 'https://firstlinedev.com/' }]));
+  await app.acceptAnalytics.emit('click');
+  assert.equal(app.window.dataLayer.length, 5);
+  await app.preferences.emit('click');
+  assert.equal(app.window.FirstLineAnalytics.getConsent(), 'rejected');
+  assert.equal(app.window.FirstLineAnalytics.track('section_navigation', { section: 'work' }), true);
+  assert.equal(app.window.dataLayer.length, 5);
+});

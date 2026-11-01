@@ -1,0 +1,10 @@
+{
+  "rootNodeRange": ">=22.22.2 <23.0.0",
+  "declaredFloor": "22.22.2",
+  "actualNode": "22.23.3",
+  "constraintsChecked": 710,
+  "declaredFloorFailures": [],
+  "actualRuntimeFailures": [],
+  "rootContractSatisfied": true,
+  "success": true
+}

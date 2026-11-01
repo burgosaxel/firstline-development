@@ -1,5 +1,13 @@
 {
   "projects": {
     "default": "firstline-development"
+  },
+  "targets": {
+    "firstline-development": {
+      "hosting": {
+        "public": ["firstline-development"],
+        "analytics": ["firstline-analytics"]
+      }
+    }
   }
 }

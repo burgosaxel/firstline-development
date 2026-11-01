@@ -1,0 +1,9 @@
+{
+  "hosting": {
+    "public": "apps/web/dist",
+    "ignore": ["firebase.production.example.json", "**/node_modules/**", "tests/**", "qa-evidence/**", ".git/**", ".worktrees/**", ".env*"],
+    "rewrites": [{ "source": "/api/**", "function": { "functionId": "analyticsApi", "region": "REPLACE_APPROVED_REGION" } }, { "source": "**", "destination": "/index.html" }],
+    "headers": [{ "source": "**", "headers": [{ "key": "X-Content-Type-Options", "value": "nosniff" }, { "key": "X-Frame-Options", "value": "DENY" }]}]
+  },
+  "functions": { "source": "functions-source", "runtime": "nodejs22", "ignore": ["**/node_modules/**", ".env*"] }
+}

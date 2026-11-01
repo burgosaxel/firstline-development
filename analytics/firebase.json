@@ -1,0 +1,51 @@
+{
+  "functions": {
+    "source": "functions-source",
+    "runtime": "nodejs22",
+    "ignore": [
+      "**/node_modules/**",
+      ".env*"
+    ]
+  },
+  "hosting": {
+    "site": "firstline-analytics",
+    "public": "apps/web/dist",
+    "ignore": [
+      "firebase.production.example.json",
+      "**/node_modules/**",
+      "tests/**",
+      "qa-evidence/**",
+      ".git/**",
+      ".worktrees/**",
+      ".env*"
+    ],
+    "rewrites": [
+      {
+        "source": "/api/**",
+        "function": {
+          "functionId": "analyticsApi",
+          "region": "us-central1"
+        }
+      },
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "X-Content-Type-Options",
+            "value": "nosniff"
+          },
+          {
+            "key": "X-Frame-Options",
+            "value": "DENY"
+          }
+        ]
+      }
+    ]
+  }
+}

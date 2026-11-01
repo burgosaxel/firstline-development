@@ -1,0 +1,10 @@
+# Closeout draft — local production-shaped owner portal candidate
+
+1. Objective: local-only, production-shaped owner portal candidate for FirstLine Development.
+2. Portal boundary: Firebase Google sign-in obtains an ID token; the API verifies it server-side, binds its Firebase project audience, and enforces the exact configured owner email, verified email, and Google provider. It is not a live Firebase verification exercise.
+3. Views: portfolio and registered-site aggregate GA4 views expose loading, no-data, forbidden, unconfigured/disconnected, permission, quota, provider, validation, and generic failure states without replacing unavailable data with zeroes.
+4. API: Express serves `/api/v1` on loopback. The Vite preview proxies the same-origin relative API path to that loopback API. The Functions v2 wrapper exports the same app without starting a listener.
+5. Provider scope: no live GA4, OAuth, Firebase, or other provider request was made. The fixed GA4 REST boundary and lazy read-only ADC token provider are implemented, disabled by default, and never fall back to fixtures.
+6. Verification: lint, typecheck, build, package, unit, contract, security, and end-to-end TypeScript suites; the supported loopback smoke starts only local listeners and closes them.
+7. Deployment template: `firebase.production.example.json` is nonexecuting. It defines a Hosting `/api/**` rewrite before the SPA fallback; no project binding, deploy command, preview, emulator, or DNS record is included.
+8. Production: not ready or authorized. An authorized operator must confirm the existing Firebase project/site/region/runtime identity, verify web Firebase configuration and Google Auth, add `analytics.firstlinedev.com` to authorized domains, grant least-privilege GA4 API/Viewer access, resolve the dependency-security hold, and obtain the external approval packet before any live acceptance/deploy/DNS work.

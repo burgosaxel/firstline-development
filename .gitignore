@@ -8,8 +8,17 @@ firebase-debug.log
 firestore-debug.log
 ui-debug.log
 .firebase/
+.hosting-public/
+.hosting-emulator-home/
+qa-evidence/
 firebase-export-*/
 service-account*.json
 *-service-account.json
 credentials*.json
 .codex-remote-attachments/
+.worktrees/
+analytics/node_modules/
+analytics/functions-source/
+analytics/apps/*/dist/
+analytics/packages/*/dist/
+analytics/**/*.tsbuildinfo

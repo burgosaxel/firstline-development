@@ -1,0 +1,604 @@
+@firebase/app@0.16.3 peer
+node_modules/@firebase/app
+  peer @firebase/app@"0.x" from @firebase/ai@2.6.1
+  node_modules/@firebase/ai
+    @firebase/ai@"2.6.1" from firebase@12.7.0
+    node_modules/firebase
+      firebase@"12.7.0" from @firstline/web@0.1.0
+      apps/web
+        @firstline/web@0.1.0
+        node_modules/@firstline/web
+          workspace apps/web from the root project
+      dev firebase@"12.7.0" from the root project
+  peer @firebase/app@"0.x" from @firebase/analytics@0.10.19
+  node_modules/@firebase/analytics
+    @firebase/analytics@"0.10.19" from @firebase/analytics-compat@0.2.25
+    node_modules/@firebase/analytics-compat
+      @firebase/analytics-compat@"0.2.25" from firebase@12.7.0
+      node_modules/firebase
+        firebase@"12.7.0" from @firstline/web@0.1.0
+        apps/web
+          @firstline/web@0.1.0
+          node_modules/@firstline/web
+            workspace apps/web from the root project
+        dev firebase@"12.7.0" from the root project
+    @firebase/analytics@"0.10.19" from firebase@12.7.0
+    node_modules/firebase
+      firebase@"12.7.0" from @firstline/web@0.1.0
+      apps/web
+        @firstline/web@0.1.0
+        node_modules/@firstline/web
+          workspace apps/web from the root project
+      dev firebase@"12.7.0" from the root project
+  peer @firebase/app@"0.x" from @firebase/app-check@0.11.0
+  node_modules/@firebase/app-check
+    @firebase/app-check@"0.11.0" from @firebase/app-check-compat@0.4.0
+    node_modules/@firebase/app-check-compat
+      @firebase/app-check-compat@"0.4.0" from firebase@12.7.0
+      node_modules/firebase
+        firebase@"12.7.0" from @firstline/web@0.1.0
+        apps/web
+          @firstline/web@0.1.0
+          node_modules/@firstline/web
+            workspace apps/web from the root project
+        dev firebase@"12.7.0" from the root project
+    @firebase/app-check@"0.11.0" from firebase@12.7.0
+    node_modules/firebase
+      firebase@"12.7.0" from @firstline/web@0.1.0
+      apps/web
+        @firstline/web@0.1.0
+        node_modules/@firstline/web
+          workspace apps/web from the root project
+      dev firebase@"12.7.0" from the root project
+  @firebase/app@"0.16.3" from @firebase/app-compat@0.5.19 peer
+  node_modules/@firebase/app-compat
+    peer @firebase/app-compat@"0.x" from @firebase/analytics-compat@0.2.25
+    node_modules/@firebase/analytics-compat
+      @firebase/analytics-compat@"0.2.25" from firebase@12.7.0
+      node_modules/firebase
+        firebase@"12.7.0" from @firstline/web@0.1.0
+        apps/web
+          @firstline/web@0.1.0
+          node_modules/@firstline/web
+            workspace apps/web from the root project
+        dev firebase@"12.7.0" from the root project
+    peer @firebase/app-compat@"0.x" from @firebase/app-check-compat@0.4.0
+    node_modules/@firebase/app-check-compat
+      @firebase/app-check-compat@"0.4.0" from firebase@12.7.0
+      node_modules/firebase
+        firebase@"12.7.0" from @firstline/web@0.1.0
+        apps/web
+          @firstline/web@0.1.0
+          node_modules/@firstline/web
+            workspace apps/web from the root project
+        dev firebase@"12.7.0" from the root project
+    peer @firebase/app-compat@"0.x" from @firebase/auth-compat@0.6.2
+    node_modules/@firebase/auth-compat
+      @firebase/auth-compat@"0.6.2" from firebase@12.7.0
+      node_modules/firebase
+        firebase@"12.7.0" from @firstline/web@0.1.0
+        apps/web
+          @firstline/web@0.1.0
+          node_modules/@firstline/web
+            workspace apps/web from the root project
+        dev firebase@"12.7.0" from the root project
+    peerOptional @firebase/app-compat@"0.x" from @firebase/database-compat@2.1.7
+    node_modules/@firebase/database-compat
+      @firebase/database-compat@"^2.1.4" from firebase-admin@14.5.0
+      node_modules/firebase-admin
+        peer firebase-admin@"^11.10.0 || ^12.0.0 || ^13.0.0 || ^14.0.0" from firebase-functions@7.4.0
+        node_modules/firebase-functions
+          firebase-functions@"7.4.0" from @firstline/api@0.1.0
+          apps/api
+            @firstline/api@0.1.0
+            node_modules/@firstline/api
+              workspace apps/api from the root project
+        firebase-admin@"14.5.0" from @firstline/api@0.1.0
+        apps/api
+          @firstline/api@0.1.0
+          node_modules/@firstline/api
+            workspace apps/api from the root project
+    peer @firebase/app-compat@"0.x" from @firebase/firestore-compat@0.4.3
+    node_modules/@firebase/firestore-compat
+      @firebase/firestore-compat@"0.4.3" from firebase@12.7.0
+      node_modules/firebase
+        firebase@"12.7.0" from @firstline/web@0.1.0
+        apps/web
+          @firstline/web@0.1.0
+          node_modules/@firstline/web
+            workspace apps/web from the root project
+        dev firebase@"12.7.0" from the root project
+    peer @firebase/app-compat@"0.x" from @firebase/functions-compat@0.4.1
+    node_modules/@firebase/functions-compat
+      @firebase/functions-compat@"0.4.1" from firebase@12.7.0
+      node_modules/firebase
+        firebase@"12.7.0" from @firstline/web@0.1.0
+        apps/web
+          @firstline/web@0.1.0
+          node_modules/@firstline/web
+            workspace apps/web from the root project
+        dev firebase@"12.7.0" from the root project
+    peer @firebase/app-compat@"0.x" from @firebase/installations-compat@0.2.19
+    node_modules/@firebase/installations-compat
+      @firebase/installations-compat@"0.2.19" from firebase@12.7.0
+      node_modules/firebase
+        firebase@"12.7.0" from @firstline/web@0.1.0
+        apps/web
+          @firstline/web@0.1.0
+          node_modules/@firstline/web
+            workspace apps/web from the root project
+        dev firebase@"12.7.0" from the root project
+    peer @firebase/app-compat@"0.x" from @firebase/messaging-compat@0.2.23
+    node_modules/@firebase/messaging-compat
+      @firebase/messaging-compat@"0.2.23" from firebase@12.7.0
+      node_modules/firebase
+        firebase@"12.7.0" from @firstline/web@0.1.0
+        apps/web
+          @firstline/web@0.1.0
+          node_modules/@firstline/web
+            workspace apps/web from the root project
+        dev firebase@"12.7.0" from the root project
+    peer @firebase/app-compat@"0.x" from @firebase/performance-compat@0.2.22
+    node_modules/@firebase/performance-compat
+      @firebase/performance-compat@"0.2.22" from firebase@12.7.0
+      node_modules/firebase
+        firebase@"12.7.0" from @firstline/web@0.1.0
+        apps/web
+          @firstline/web@0.1.0
+          node_modules/@firstline/web
+            workspace apps/web from the root project
+        dev firebase@"12.7.0" from the root project
+    peer @firebase/app-compat@"0.x" from @firebase/remote-config-compat@0.2.20
+    node_modules/@firebase/remote-config-compat
+      @firebase/remote-config-compat@"0.2.20" from firebase@12.7.0
+      node_modules/firebase
+        firebase@"12.7.0" from @firstline/web@0.1.0
+        apps/web
+          @firstline/web@0.1.0
+          node_modules/@firstline/web
+            workspace apps/web from the root project
+        dev firebase@"12.7.0" from the root project
+    peer @firebase/app-compat@"0.x" from @firebase/storage-compat@0.4.0
+    node_modules/@firebase/storage-compat
+      @firebase/storage-compat@"0.4.0" from firebase@12.7.0
+      node_modules/firebase
+        firebase@"12.7.0" from @firstline/web@0.1.0
+        apps/web
+          @firstline/web@0.1.0
+          node_modules/@firstline/web
+            workspace apps/web from the root project
+        dev firebase@"12.7.0" from the root project
+  peer @firebase/app@"0.x" from @firebase/auth@1.12.0
+  node_modules/@firebase/auth-compat/node_modules/@firebase/auth
+    @firebase/auth@"1.12.0" from @firebase/auth-compat@0.6.2
+    node_modules/@firebase/auth-compat
+      @firebase/auth-compat@"0.6.2" from firebase@12.7.0
+      node_modules/firebase
+        firebase@"12.7.0" from @firstline/web@0.1.0
+        apps/web
+          @firstline/web@0.1.0
+          node_modules/@firstline/web
+            workspace apps/web from the root project
+        dev firebase@"12.7.0" from the root project
+  peer @firebase/app@"0.x" from @firebase/data-connect@0.3.12
+  node_modules/@firebase/data-connect
+    @firebase/data-connect@"0.3.12" from firebase@12.7.0
+    node_modules/firebase
+      firebase@"12.7.0" from @firstline/web@0.1.0
+      apps/web
+        @firstline/web@0.1.0
+        node_modules/@firstline/web
+          workspace apps/web from the root project
+      dev firebase@"12.7.0" from the root project
+  peerOptional @firebase/app@"0.x" from @firebase/database-compat@2.1.7
+  node_modules/@firebase/database-compat
+    @firebase/database-compat@"^2.1.4" from firebase-admin@14.5.0
+    node_modules/firebase-admin
+      peer firebase-admin@"^11.10.0 || ^12.0.0 || ^13.0.0 || ^14.0.0" from firebase-functions@7.4.0
+      node_modules/firebase-functions
+        firebase-functions@"7.4.0" from @firstline/api@0.1.0
+        apps/api
+          @firstline/api@0.1.0
+          node_modules/@firstline/api
+            workspace apps/api from the root project
+      firebase-admin@"14.5.0" from @firstline/api@0.1.0
+      apps/api
+        @firstline/api@0.1.0
+        node_modules/@firstline/api
+          workspace apps/api from the root project
+  peer @firebase/app@"0.x" from @firebase/firestore@4.9.3
+  node_modules/@firebase/firestore
+    @firebase/firestore@"4.9.3" from @firebase/firestore-compat@0.4.3
+    node_modules/@firebase/firestore-compat
+      @firebase/firestore-compat@"0.4.3" from firebase@12.7.0
+      node_modules/firebase
+        firebase@"12.7.0" from @firstline/web@0.1.0
+        apps/web
+          @firstline/web@0.1.0
+          node_modules/@firstline/web
+            workspace apps/web from the root project
+        dev firebase@"12.7.0" from the root project
+    @firebase/firestore@"4.9.3" from firebase@12.7.0
+    node_modules/firebase
+      firebase@"12.7.0" from @firstline/web@0.1.0
+      apps/web
+        @firstline/web@0.1.0
+        node_modules/@firstline/web
+          workspace apps/web from the root project
+      dev firebase@"12.7.0" from the root project
+  peer @firebase/app@"0.x" from @firebase/functions@0.13.1
+  node_modules/@firebase/functions
+    @firebase/functions@"0.13.1" from @firebase/functions-compat@0.4.1
+    node_modules/@firebase/functions-compat
+      @firebase/functions-compat@"0.4.1" from firebase@12.7.0
+      node_modules/firebase
+        firebase@"12.7.0" from @firstline/web@0.1.0
+        apps/web
+          @firstline/web@0.1.0
+          node_modules/@firstline/web
+            workspace apps/web from the root project
+        dev firebase@"12.7.0" from the root project
+    @firebase/functions@"0.13.1" from firebase@12.7.0
+    node_modules/firebase
+      firebase@"12.7.0" from @firstline/web@0.1.0
+      apps/web
+        @firstline/web@0.1.0
+        node_modules/@firstline/web
+          workspace apps/web from the root project
+      dev firebase@"12.7.0" from the root project
+  peer @firebase/app@"0.x" from @firebase/installations@0.6.19
+  node_modules/@firebase/installations
+    @firebase/installations@"0.6.19" from @firebase/analytics@0.10.19
+    node_modules/@firebase/analytics
+      @firebase/analytics@"0.10.19" from @firebase/analytics-compat@0.2.25
+      node_modules/@firebase/analytics-compat
+        @firebase/analytics-compat@"0.2.25" from firebase@12.7.0
+        node_modules/firebase
+          firebase@"12.7.0" from @firstline/web@0.1.0
+          apps/web
+            @firstline/web@0.1.0
+            node_modules/@firstline/web
+              workspace apps/web from the root project
+          dev firebase@"12.7.0" from the root project
+      @firebase/analytics@"0.10.19" from firebase@12.7.0
+      node_modules/firebase
+        firebase@"12.7.0" from @firstline/web@0.1.0
+        apps/web
+          @firstline/web@0.1.0
+          node_modules/@firstline/web
+            workspace apps/web from the root project
+        dev firebase@"12.7.0" from the root project
+    @firebase/installations@"0.6.19" from @firebase/installations-compat@0.2.19
+    node_modules/@firebase/installations-compat
+      @firebase/installations-compat@"0.2.19" from firebase@12.7.0
+      node_modules/firebase
+        firebase@"12.7.0" from @firstline/web@0.1.0
+        apps/web
+          @firstline/web@0.1.0
+          node_modules/@firstline/web
+            workspace apps/web from the root project
+        dev firebase@"12.7.0" from the root project
+    @firebase/installations@"0.6.19" from @firebase/messaging@0.12.23
+    node_modules/@firebase/messaging
+      @firebase/messaging@"0.12.23" from @firebase/messaging-compat@0.2.23
+      node_modules/@firebase/messaging-compat
+        @firebase/messaging-compat@"0.2.23" from firebase@12.7.0
+        node_modules/firebase
+          firebase@"12.7.0" from @firstline/web@0.1.0
+          apps/web
+            @firstline/web@0.1.0
+            node_modules/@firstline/web
+              workspace apps/web from the root project
+          dev firebase@"12.7.0" from the root project
+      @firebase/messaging@"0.12.23" from firebase@12.7.0
+      node_modules/firebase
+        firebase@"12.7.0" from @firstline/web@0.1.0
+        apps/web
+          @firstline/web@0.1.0
+          node_modules/@firstline/web
+            workspace apps/web from the root project
+        dev firebase@"12.7.0" from the root project
+    @firebase/installations@"0.6.19" from @firebase/performance@0.7.9
+    node_modules/@firebase/performance
+      @firebase/performance@"0.7.9" from @firebase/performance-compat@0.2.22
+      node_modules/@firebase/performance-compat
+        @firebase/performance-compat@"0.2.22" from firebase@12.7.0
+        node_modules/firebase
+          firebase@"12.7.0" from @firstline/web@0.1.0
+          apps/web
+            @firstline/web@0.1.0
+            node_modules/@firstline/web
+              workspace apps/web from the root project
+          dev firebase@"12.7.0" from the root project
+      @firebase/performance@"0.7.9" from firebase@12.7.0
+      node_modules/firebase
+        firebase@"12.7.0" from @firstline/web@0.1.0
+        apps/web
+          @firstline/web@0.1.0
+          node_modules/@firstline/web
+            workspace apps/web from the root project
+        dev firebase@"12.7.0" from the root project
+    @firebase/installations@"0.6.19" from @firebase/remote-config@0.7.0
+    node_modules/@firebase/remote-config
+      @firebase/remote-config@"0.7.0" from @firebase/remote-config-compat@0.2.20
+      node_modules/@firebase/remote-config-compat
+        @firebase/remote-config-compat@"0.2.20" from firebase@12.7.0
+        node_modules/firebase
+          firebase@"12.7.0" from @firstline/web@0.1.0
+          apps/web
+            @firstline/web@0.1.0
+            node_modules/@firstline/web
+              workspace apps/web from the root project
+          dev firebase@"12.7.0" from the root project
+      @firebase/remote-config@"0.7.0" from firebase@12.7.0
+      node_modules/firebase
+        firebase@"12.7.0" from @firstline/web@0.1.0
+        apps/web
+          @firstline/web@0.1.0
+          node_modules/@firstline/web
+            workspace apps/web from the root project
+        dev firebase@"12.7.0" from the root project
+    @firebase/installations@"0.6.19" from firebase@12.7.0
+    node_modules/firebase
+      firebase@"12.7.0" from @firstline/web@0.1.0
+      apps/web
+        @firstline/web@0.1.0
+        node_modules/@firstline/web
+          workspace apps/web from the root project
+      dev firebase@"12.7.0" from the root project
+  peer @firebase/app@"0.x" from @firebase/messaging@0.12.23
+  node_modules/@firebase/messaging
+    @firebase/messaging@"0.12.23" from @firebase/messaging-compat@0.2.23
+    node_modules/@firebase/messaging-compat
+      @firebase/messaging-compat@"0.2.23" from firebase@12.7.0
+      node_modules/firebase
+        firebase@"12.7.0" from @firstline/web@0.1.0
+        apps/web
+          @firstline/web@0.1.0
+          node_modules/@firstline/web
+            workspace apps/web from the root project
+        dev firebase@"12.7.0" from the root project
+    @firebase/messaging@"0.12.23" from firebase@12.7.0
+    node_modules/firebase
+      firebase@"12.7.0" from @firstline/web@0.1.0
+      apps/web
+        @firstline/web@0.1.0
+        node_modules/@firstline/web
+          workspace apps/web from the root project
+      dev firebase@"12.7.0" from the root project
+  peer @firebase/app@"0.x" from @firebase/performance@0.7.9
+  node_modules/@firebase/performance
+    @firebase/performance@"0.7.9" from @firebase/performance-compat@0.2.22
+    node_modules/@firebase/performance-compat
+      @firebase/performance-compat@"0.2.22" from firebase@12.7.0
+      node_modules/firebase
+        firebase@"12.7.0" from @firstline/web@0.1.0
+        apps/web
+          @firstline/web@0.1.0
+          node_modules/@firstline/web
+            workspace apps/web from the root project
+        dev firebase@"12.7.0" from the root project
+    @firebase/performance@"0.7.9" from firebase@12.7.0
+    node_modules/firebase
+      firebase@"12.7.0" from @firstline/web@0.1.0
+      apps/web
+        @firstline/web@0.1.0
+        node_modules/@firstline/web
+          workspace apps/web from the root project
+      dev firebase@"12.7.0" from the root project
+  peer @firebase/app@"0.x" from @firebase/remote-config@0.7.0
+  node_modules/@firebase/remote-config
+    @firebase/remote-config@"0.7.0" from @firebase/remote-config-compat@0.2.20
+    node_modules/@firebase/remote-config-compat
+      @firebase/remote-config-compat@"0.2.20" from firebase@12.7.0
+      node_modules/firebase
+        firebase@"12.7.0" from @firstline/web@0.1.0
+        apps/web
+          @firstline/web@0.1.0
+          node_modules/@firstline/web
+            workspace apps/web from the root project
+        dev firebase@"12.7.0" from the root project
+    @firebase/remote-config@"0.7.0" from firebase@12.7.0
+    node_modules/firebase
+      firebase@"12.7.0" from @firstline/web@0.1.0
+      apps/web
+        @firstline/web@0.1.0
+        node_modules/@firstline/web
+          workspace apps/web from the root project
+      dev firebase@"12.7.0" from the root project
+  peer @firebase/app@"0.x" from @firebase/storage@0.14.0
+  node_modules/@firebase/storage
+    @firebase/storage@"0.14.0" from @firebase/storage-compat@0.4.0
+    node_modules/@firebase/storage-compat
+      @firebase/storage-compat@"0.4.0" from firebase@12.7.0
+      node_modules/firebase
+        firebase@"12.7.0" from @firstline/web@0.1.0
+        apps/web
+          @firstline/web@0.1.0
+          node_modules/@firstline/web
+            workspace apps/web from the root project
+        dev firebase@"12.7.0" from the root project
+    @firebase/storage@"0.14.0" from firebase@12.7.0
+    node_modules/firebase
+      firebase@"12.7.0" from @firstline/web@0.1.0
+      apps/web
+        @firstline/web@0.1.0
+        node_modules/@firstline/web
+          workspace apps/web from the root project
+      dev firebase@"12.7.0" from the root project
+
+@firebase/app@0.14.6
+node_modules/firebase/node_modules/@firebase/app
+  @firebase/app@"0.14.6" from firebase@12.7.0
+  node_modules/firebase
+    firebase@"12.7.0" from @firstline/web@0.1.0
+    apps/web
+      @firstline/web@0.1.0
+      node_modules/@firstline/web
+        workspace apps/web from the root project
+    dev firebase@"12.7.0" from the root project
+  @firebase/app@"0.14.6" from @firebase/app-compat@0.5.6
+  node_modules/firebase/node_modules/@firebase/app-compat
+    @firebase/app-compat@"0.5.6" from firebase@12.7.0
+    node_modules/firebase
+      firebase@"12.7.0" from @firstline/web@0.1.0
+      apps/web
+        @firstline/web@0.1.0
+        node_modules/@firstline/web
+          workspace apps/web from the root project
+      dev firebase@"12.7.0" from the root project
+  peer @firebase/app@"0.x" from @firebase/auth@1.12.0
+  node_modules/firebase/node_modules/@firebase/auth
+    @firebase/auth@"1.12.0" from firebase@12.7.0
+    node_modules/firebase
+      firebase@"12.7.0" from @firstline/web@0.1.0
+      apps/web
+        @firstline/web@0.1.0
+        node_modules/@firstline/web
+          workspace apps/web from the root project
+      dev firebase@"12.7.0" from the root project
+
+@firebase/app-compat@0.5.19 peer
+node_modules/@firebase/app-compat
+  peer @firebase/app-compat@"0.x" from @firebase/analytics-compat@0.2.25
+  node_modules/@firebase/analytics-compat
+    @firebase/analytics-compat@"0.2.25" from firebase@12.7.0
+    node_modules/firebase
+      firebase@"12.7.0" from @firstline/web@0.1.0
+      apps/web
+        @firstline/web@0.1.0
+        node_modules/@firstline/web
+          workspace apps/web from the root project
+      dev firebase@"12.7.0" from the root project
+  peer @firebase/app-compat@"0.x" from @firebase/app-check-compat@0.4.0
+  node_modules/@firebase/app-check-compat
+    @firebase/app-check-compat@"0.4.0" from firebase@12.7.0
+    node_modules/firebase
+      firebase@"12.7.0" from @firstline/web@0.1.0
+      apps/web
+        @firstline/web@0.1.0
+        node_modules/@firstline/web
+          workspace apps/web from the root project
+      dev firebase@"12.7.0" from the root project
+  peer @firebase/app-compat@"0.x" from @firebase/auth-compat@0.6.2
+  node_modules/@firebase/auth-compat
+    @firebase/auth-compat@"0.6.2" from firebase@12.7.0
+    node_modules/firebase
+      firebase@"12.7.0" from @firstline/web@0.1.0
+      apps/web
+        @firstline/web@0.1.0
+        node_modules/@firstline/web
+          workspace apps/web from the root project
+      dev firebase@"12.7.0" from the root project
+  peerOptional @firebase/app-compat@"0.x" from @firebase/database-compat@2.1.7
+  node_modules/@firebase/database-compat
+    @firebase/database-compat@"^2.1.4" from firebase-admin@14.5.0
+    node_modules/firebase-admin
+      peer firebase-admin@"^11.10.0 || ^12.0.0 || ^13.0.0 || ^14.0.0" from firebase-functions@7.4.0
+      node_modules/firebase-functions
+        firebase-functions@"7.4.0" from @firstline/api@0.1.0
+        apps/api
+          @firstline/api@0.1.0
+          node_modules/@firstline/api
+            workspace apps/api from the root project
+      firebase-admin@"14.5.0" from @firstline/api@0.1.0
+      apps/api
+        @firstline/api@0.1.0
+        node_modules/@firstline/api
+          workspace apps/api from the root project
+  peer @firebase/app-compat@"0.x" from @firebase/firestore-compat@0.4.3
+  node_modules/@firebase/firestore-compat
+    @firebase/firestore-compat@"0.4.3" from firebase@12.7.0
+    node_modules/firebase
+      firebase@"12.7.0" from @firstline/web@0.1.0
+      apps/web
+        @firstline/web@0.1.0
+        node_modules/@firstline/web
+          workspace apps/web from the root project
+      dev firebase@"12.7.0" from the root project
+  peer @firebase/app-compat@"0.x" from @firebase/functions-compat@0.4.1
+  node_modules/@firebase/functions-compat
+    @firebase/functions-compat@"0.4.1" from firebase@12.7.0
+    node_modules/firebase
+      firebase@"12.7.0" from @firstline/web@0.1.0
+      apps/web
+        @firstline/web@0.1.0
+        node_modules/@firstline/web
+          workspace apps/web from the root project
+      dev firebase@"12.7.0" from the root project
+  peer @firebase/app-compat@"0.x" from @firebase/installations-compat@0.2.19
+  node_modules/@firebase/installations-compat
+    @firebase/installations-compat@"0.2.19" from firebase@12.7.0
+    node_modules/firebase
+      firebase@"12.7.0" from @firstline/web@0.1.0
+      apps/web
+        @firstline/web@0.1.0
+        node_modules/@firstline/web
+          workspace apps/web from the root project
+      dev firebase@"12.7.0" from the root project
+  peer @firebase/app-compat@"0.x" from @firebase/messaging-compat@0.2.23
+  node_modules/@firebase/messaging-compat
+    @firebase/messaging-compat@"0.2.23" from firebase@12.7.0
+    node_modules/firebase
+      firebase@"12.7.0" from @firstline/web@0.1.0
+      apps/web
+        @firstline/web@0.1.0
+        node_modules/@firstline/web
+          workspace apps/web from the root project
+      dev firebase@"12.7.0" from the root project
+  peer @firebase/app-compat@"0.x" from @firebase/performance-compat@0.2.22
+  node_modules/@firebase/performance-compat
+    @firebase/performance-compat@"0.2.22" from firebase@12.7.0
+    node_modules/firebase
+      firebase@"12.7.0" from @firstline/web@0.1.0
+      apps/web
+        @firstline/web@0.1.0
+        node_modules/@firstline/web
+          workspace apps/web from the root project
+      dev firebase@"12.7.0" from the root project
+  peer @firebase/app-compat@"0.x" from @firebase/remote-config-compat@0.2.20
+  node_modules/@firebase/remote-config-compat
+    @firebase/remote-config-compat@"0.2.20" from firebase@12.7.0
+    node_modules/firebase
+      firebase@"12.7.0" from @firstline/web@0.1.0
+      apps/web
+        @firstline/web@0.1.0
+        node_modules/@firstline/web
+          workspace apps/web from the root project
+      dev firebase@"12.7.0" from the root project
+  peer @firebase/app-compat@"0.x" from @firebase/storage-compat@0.4.0
+  node_modules/@firebase/storage-compat
+    @firebase/storage-compat@"0.4.0" from firebase@12.7.0
+    node_modules/firebase
+      firebase@"12.7.0" from @firstline/web@0.1.0
+      apps/web
+        @firstline/web@0.1.0
+        node_modules/@firstline/web
+          workspace apps/web from the root project
+      dev firebase@"12.7.0" from the root project
+
+@firebase/app-compat@0.5.6
+node_modules/firebase/node_modules/@firebase/app-compat
+  @firebase/app-compat@"0.5.6" from firebase@12.7.0
+  node_modules/firebase
+    firebase@"12.7.0" from @firstline/web@0.1.0
+    apps/web
+      @firstline/web@0.1.0
+      node_modules/@firstline/web
+        workspace apps/web from the root project
+    dev firebase@"12.7.0" from the root project
+
+firebase-admin@14.5.0
+node_modules/firebase-admin
+  peer firebase-admin@"^11.10.0 || ^12.0.0 || ^13.0.0 || ^14.0.0" from firebase-functions@7.4.0
+  node_modules/firebase-functions
+    firebase-functions@"7.4.0" from @firstline/api@0.1.0
+    apps/api
+      @firstline/api@0.1.0
+      node_modules/@firstline/api
+        workspace apps/api from the root project
+  firebase-admin@"14.5.0" from @firstline/api@0.1.0
+  apps/api
+    @firstline/api@0.1.0
+    node_modules/@firstline/api
+      workspace apps/api from the root project

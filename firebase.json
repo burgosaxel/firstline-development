@@ -11,53 +11,77 @@
         "firebase-debug.*.log",
         "*.local"
       ]
+    },
+    {
+      "source": "analytics/functions-source",
+      "codebase": "analytics",
+      "runtime": "nodejs22",
+      "ignore": [
+        "**/node_modules/**",
+        ".env*"
+      ]
     }
   ],
   "firestore": {
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   },
-  "hosting": {
-    "site": "firstline-development",
-    "public": ".",
-    "ignore": [
-      "firebase.json",
-      ".firebaserc",
-      ".git",
-      ".git/**",
-      ".gitignore",
-      ".codex-remote-attachments",
-      ".codex-remote-attachments/**",
-      "CNAME",
-      "functions",
-      "functions/**",
-      "firestore.rules",
-      "firestore.indexes.json",
-      "firebase-debug.log",
-      "firebase-debug.*.log",
-      "*.local"
-    ],
-    "cleanUrls": true,
-    "trailingSlash": false,
-    "headers": [
-      {
-        "source": "**/*.@(js|css)",
-        "headers": [
-          {
-            "key": "Cache-Control",
-            "value": "public, max-age=3600"
+  "hosting": [
+    {
+      "target": "public",
+      "public": ".",
+      "ignore": [
+        "firebase.json", ".firebaserc", "firebase.local.json", ".git", ".git/**", ".gitignore", ".worktrees", ".worktrees/**", ".*", ".*/**", ".hosting-public", ".hosting-public/**", "analytics", "analytics/**", "functions", "functions/**", "docs", "docs/**", "scripts", "scripts/**", "tests", "tests/**", "node_modules", "node_modules/**", "qa-evidence", "qa-evidence/**", "firestore.rules", "firestore.indexes.json", "firebase-debug.log", "firebase-debug.*.log", "firestore-debug.log", "*.local", ".env*", "*.md", "package*.json", "package-lock.json", "tsconfig*.json", "eslint.config.*", "CNAME"
+      ],
+      "cleanUrls": true,
+      "trailingSlash": false,
+      "headers": [
+        {
+          "source": "**/*.@(js|css)",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=3600"
+            }
+          ]
+        },
+        {
+          "source": "**/*.@(png|jpg|jpeg|webp|gif|svg|ico)",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=604800"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "target": "analytics",
+      "public": "analytics/apps/web/dist",
+      "ignore": ["**/node_modules/**", ".env*", "tests/**", "qa-evidence/**", ".git/**", ".worktrees/**"],
+      "rewrites": [
+        {
+          "source": "/api/**",
+          "function": {
+            "functionId": "analyticsApi",
+            "region": "us-central1"
           }
-        ]
-      },
-      {
-        "source": "**/*.@(png|jpg|jpeg|webp|gif|svg|ico)",
-        "headers": [
-          {
-            "key": "Cache-Control",
-            "value": "public, max-age=604800"
-          }
-        ]
-      }
-    ]
-  }
+        },
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ],
+      "headers": [
+        {
+          "source": "**",
+          "headers": [
+            { "key": "X-Content-Type-Options", "value": "nosniff" },
+            { "key": "X-Frame-Options", "value": "DENY" }
+          ]
+        }
+      ]
+    }
+  ]
 }

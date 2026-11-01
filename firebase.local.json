@@ -1,0 +1,19 @@
+{
+  "emulators": {
+    "hosting": {
+      "host": "127.0.0.1",
+      "port": 5008
+    }
+  },
+  "hosting": [
+    {
+      "site": "demo-firstline-public",
+      "public": ".hosting-public"
+    },
+    {
+      "site": "demo-firstline-analytics",
+      "public": "analytics/apps/web/dist",
+      "ignore": ["**/node_modules/**", ".env*", "tests/**", "qa-evidence/**", ".git/**", ".worktrees/**"]
+    }
+  ]
+}

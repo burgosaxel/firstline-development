@@ -1,0 +1,4 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { createApp } from '../../apps/api/src/app.ts';
+test('loopback owner API fails closed without Firebase configuration', async () => { const listener = createApp().listen(0, '127.0.0.1'); await new Promise<void>((resolve) => listener.once('listening', resolve)); const address = listener.address() as { port: number }; try { const health = await fetch(`http://127.0.0.1:${address.port}/api/v1/health`); const protectedResponse = await fetch(`http://127.0.0.1:${address.port}/api/v1/sites`, { headers: { Authorization: 'Bearer untrusted' } }); assert.equal((await health.json()).authentication, 'unconfigured'); assert.equal(protectedResponse.status, 503); } finally { await new Promise<void>((resolve) => listener.close(() => resolve())); } });

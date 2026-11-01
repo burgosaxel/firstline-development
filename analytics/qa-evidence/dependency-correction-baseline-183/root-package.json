@@ -1,0 +1,44 @@
+{
+  "name": "firstline-analytics",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "dev:local": "concurrently -k \"npm run dev -w @firstline/web\" \"npm run serve -w @firstline/api\"",
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "tsc -b",
+    "build": "npm run build -w @firstline/contracts && npm run build -w @firstline/api && npm run build -w @firstline/web",
+    "test:unit": "tsx --test tests/unit/*.test.ts",
+    "test:contracts": "tsx --test tests/contracts/*.test.ts",
+    "test:security": "tsx --test tests/security/*.test.ts",
+    "test:e2e": "tsx --test tests/e2e/*.test.ts",
+    "test:browser": "node qa-evidence/browser-check.mjs",
+    "test:emulators": "PATH=\"$PWD/.tooling/java/home/bin:$PATH\" JAVA_HOME=\"$PWD/.tooling/java/home\" FIRSTLINE_MODE=emulator firebase emulators:exec --project demo-firstline-analytics --only auth,firestore,functions,hosting \"tsx --test tests/emulators/*.test.ts\""
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.5",
+    "@types/express": "5.0.0",
+    "@types/node": "22.13.4",
+    "@types/react": "19.0.8",
+    "@types/react-dom": "19.0.3",
+    "@vitejs/plugin-react": "4.3.4",
+    "concurrently": "9.1.2",
+    "eslint": "9.39.5",
+    "express": "4.22.3",
+    "firebase": "12.7.0",
+    "firebase-tools": "15.34.0",
+    "globals": "15.15.0",
+    "playwright": "1.64.1",
+    "tsx": "4.19.3",
+    "typescript": "5.7.3",
+    "typescript-eslint": "8.72.0",
+    "vite": "6.4.5"
+  }
+}
